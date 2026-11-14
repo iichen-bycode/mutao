@@ -1,0 +1,24 @@
+.community-page { padding: 38rpx 26rpx 145rpx; }
+.intro { margin: 0 3rpx 25rpx; padding: 27rpx 23rpx; border: 1rpx solid #FCD5CE; border-radius: 48rpx; background: #FCD5CE; box-shadow: 0 8rpx 28rpx rgba(255,181,167,.12); }
+.eyebrow { margin-bottom: 9rpx; color: #5A4A48; font-size: 20rpx; font-weight: 700; letter-spacing: .4rpx; }
+.title { margin-bottom: 9rpx; color: #5A4A48; font-size: 37rpx; line-height: 1.28; font-weight: 760; }
+.intro-copy { max-width: 610rpx; color: #5A4A48; font-size: 22rpx; line-height: 1.65; }
+.selected { display: flex; align-items: center; margin-top: 17rpx; padding: 21rpx; border-color: #A7D7A1; background: #FFFFFF; }
+.selected-icon { display: flex; align-items: center; justify-content: center; width: 66rpx; height: 66rpx; flex: none; margin-right: 16rpx; border-radius: 25rpx; background: #A7D7A1; color: #5A4A48; font-size: 29rpx; }
+.selected-info { min-width: 0; flex: 1; }
+.selected-label { margin-bottom: 4rpx; color: #947C7A; font-size: 20rpx; }
+.name { overflow: hidden; color: #5A4A48; font-size: 24rpx; font-weight: 680; text-overflow: ellipsis; white-space: nowrap; }
+.address { overflow: hidden; margin-top: 4rpx; font-size: 20rpx; text-overflow: ellipsis; white-space: nowrap; }
+.check-mark { display: flex; align-items: center; justify-content: center; width: 39rpx; height: 39rpx; margin-left: 9rpx; border-radius: 50%; background: #A7D7A1; color: #5A4A48; font-size: 21rpx; }
+.map-pick { width: 100%; height: 84rpx; margin-top: 19rpx; border-radius: 32rpx; font-size: 24rpx; }
+.map-note { display: flex; align-items: flex-start; margin: 19rpx 5rpx 0; color: #5A4A48; }
+.note-mark { display: flex; flex: none; align-items: center; justify-content: center; width: 34rpx; height: 34rpx; margin: 2rpx 11rpx 0 0; border: 1rpx solid #FCD5CE; border-radius: 50%; font-size: 20rpx; font-weight: 700; }
+.note-title { margin-bottom: 4rpx; color: #5A4A48; font-size: 21rpx; font-weight: 680; }
+.map-note .muted { font-size: 20rpx; line-height: 1.6; }
+.divider { display: flex; align-items: center; gap: 14rpx; margin: 31rpx 0 18rpx; color: #947C7A; font-size: 20rpx; }
+.divider::before,.divider::after { height: 1rpx; flex: 1; background: #FCD5CE; content: ''; }
+.all-option { display: flex; align-items: center; padding: 20rpx; }
+.all-icon { display: flex; align-items: center; justify-content: center; width: 62rpx; height: 62rpx; flex: none; margin-right: 16rpx; border-radius: 25rpx; background: #FCD5CE; color: #5A4A48; font-size: 25rpx; font-weight: 750; }
+.all-text { min-width: 0; flex: 1; }
+.all-text .muted { margin-top: 4rpx; font-size: 20rpx; }
+.arrow { margin-left: 11rpx; color: #947C7A; font-size: 31rpx; }

@@ -1,0 +1,43 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/community-feed/community-feed",
+    "pages/community/community",
+    "pages/history/history",
+    "pages/settings/settings",
+    "pages/detail/detail",
+    "pages/publish/publish",
+    "pages/conversations/conversations",
+    "pages/chat/chat",
+    "pages/me/me"
+  ],
+  "window": {
+    "navigationBarTitleText": "睦淘",
+    "navigationBarBackgroundColor": "#FFF7F1",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF7F1",
+    "backgroundTextStyle": "light"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "仅在你主动选择小区或发布归属位置时打开地图选点"
+    }
+  },
+  "requiredPrivateInfos": ["chooseLocation"],
+  "tabBar": {
+    "custom": true,
+    "color": "#947C7A",
+    "selectedColor": "#FF8FA3",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/community-feed/community-feed", "text": "社区" },
+      { "pagePath": "pages/publish/publish", "text": "发布" },
+      { "pagePath": "pages/conversations/conversations", "text": "消息" },
+      { "pagePath": "pages/me/me", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

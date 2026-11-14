@@ -1,0 +1,30 @@
+<view wx:if="{{item}}" class="detail-page page-enter">
+  <swiper wx:if="{{item.images.length && !galleryError}}" class="gallery" indicator-dots="{{item.images.length > 1}}" indicator-active-color="#FF8FA3" circular="{{item.images.length > 1}}">
+    <swiper-item wx:for="{{item.images}}" wx:key="*this" data-current="{{item}}" bindtap="previewImage"><image class="gallery-image" src="{{item}}" mode="aspectFill" lazy-load="true" binderror="onGalleryError" /></swiper-item>
+  </swiper>
+  <view wx:else class="gallery-placeholder"><view class="placeholder-icon">邻</view><view>卖家暂未添加图片</view></view>
+
+  <view class="price-card card">
+    <view class="price"><text>¥</text>{{item.price}}</view>
+    <view wx:if="{{item.status !== 'published'}}" class="status status-{{item.status}}">{{item.status === 'sold' ? '已售出' : item.status === 'pending' ? '待审核' : item.status === 'rejected' ? '未通过审核' : '已下架'}}</view>
+    <view class="title">{{item.title}}</view>
+    <view class="meta-row"><text class="meta-pill">{{item.condition_label || '闲置好物'}}</text><text class="meta-dot">·</text><text class="muted">{{item.view_count || 0}} 次浏览</text></view>
+    <view wx:if="{{item.isOwner && item.moderation_note}}" class="moderation-note"><text class="note-label">审核说明</text><text>{{item.moderation_note}}</text></view>
+  </view>
+
+  <view class="seller-card card">
+    <image wx:if="{{item.seller_avatar}}" class="avatar" src="{{item.seller_avatar}}" mode="aspectFill" />
+    <view wx:else class="avatar avatar-fallback">{{item.seller_initial || '邻'}}</view>
+    <view class="seller-info"><view class="seller-name">{{item.isOwner ? '这是你发布的闲置' : (item.seller_nickname || '邻居')}}</view><view class="muted seller-meta">{{item.community_name || '邻里分享'}}<text wx:if="{{item.category_name}}"> · {{item.category_name}}</text></view></view>
+  </view>
+
+  <view class="description card"><view class="block-title">物品描述</view><view class="description-text">{{item.description || '卖家暂未补充描述'}}</view></view>
+  <view wx:if="{{item.contact_type !== 'none' && item.contact_value && !item.isOwner}}" class="contact-card card" hover-class="pressed" bindtap="callSeller"><view class="contact-head"><view class="block-title">卖家公开的联系方式</view><view class="contact-action">{{item.contact_type === 'phone' || item.contact_type === 'both' ? '拨打' : '复制'}}</view></view><view class="contact-value">{{item.contact_value}}</view><view class="muted small">点击{{item.contact_type === 'phone' || item.contact_type === 'both' ? '拨打电话' : '复制微信号'}}</view></view>
+  <view wx:if="{{!item.isOwner}}" class="report-link" hover-class="pressed" bindtap="report">举报不合适的信息</view>
+
+  <view wx:if="{{item.isOwner && item.status === 'published'}}" class="bottom-actions owner-actions"><button class="primary action-button" hover-class="pressed" loading="{{markingSold}}" bindtap="markSold">标记为已售出</button></view>
+  <view wx:elif="{{!item.isOwner}}" class="bottom-actions"><button class="favorite action-button" hover-class="pressed" bindtap="toggleFavorite"><text class="favorite-star {{favoriteBounce ? 'heart-bounce' : ''}}">{{favorite ? '♥' : '♡'}}</text>{{favorite ? '已收藏' : '收藏'}}</button><button class="primary message-button action-button" hover-class="pressed" bindtap="messageSeller">{{item.status === 'sold' ? '咨询卖家' : '聊一聊'}}</button></view>
+</view>
+<view wx:elif="{{loading}}" class="detail-skeleton page-enter"><view class="skeleton-block skeleton-gallery"></view><view class="card skeleton-detail-card"><view class="skeleton-line skeleton-price-line"></view><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view><view class="card skeleton-seller-card"><view class="skeleton-block skeleton-avatar"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view></view></view>
+<view wx:elif="{{error}}" class="state-panel"><view class="state-title">暂时无法打开这条信息</view><view class="state-copy">它可能已下架，或网络暂时不可用</view><button class="primary state-action" hover-class="pressed" bindtap="retry">重新加载</button></view>
+<view wx:else class="state-panel"><view class="state-title">信息不存在或已下架</view><view class="state-copy">回到首页看看其他邻居分享的好物吧</view></view>

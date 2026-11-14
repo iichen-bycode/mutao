@@ -1,0 +1,23 @@
+<view class="chat-page page-enter">
+  <view class="connection-bar">
+    <view class="connection-indicator {{connectionState === 'connected' ? 'online' : 'offline'}}"></view>
+    <text class="connection-label">{{connectionState === 'connected' ? '已连接，可发送消息' : connectionState === 'connecting' ? '正在连接消息服务…' : '消息连接已断开'}}</text>
+    <text wx:if="{{connectionState === 'disconnected'}}" class="retry-link" hover-class="pressed" bindtap="retry">重新连接</text>
+  </view>
+  <view class="chat-caption card"><view class="caption-label">正在聊</view><view class="caption-title">{{title}}</view><view class="muted">请友好沟通，线下交易注意安全</view></view>
+
+  <view wx:if="{{loadingHistory}}" class="chat-skeleton" aria-hidden="true"><view class="skeleton-block skeleton-bubble theirs-skeleton"></view><view class="skeleton-block skeleton-bubble mine-skeleton"></view><view class="skeleton-block skeleton-bubble theirs-skeleton short-bubble"></view></view>
+  <view wx:elif="{{historyError && !messages.length}}" class="state-panel"><view class="state-title">聊天记录暂时无法加载</view><view class="state-copy">检查网络后重新连接</view><button class="primary state-action" hover-class="pressed" bindtap="retry">重试</button></view>
+  <view wx:elif="{{!messages.length}}" class="state-panel first-message"><view class="state-icon">聊</view><view class="state-title">打个招呼，开始聊聊</view><view class="state-copy">关于物品的问题，可以直接问卖家</view></view>
+
+  <view wx:else class="messages-list">
+    <view wx:for="{{messages}}" wx:key="id" class="message-row {{item.isMine ? 'sent' : ''}}">
+      <view class="bubble-column"><view class="bubble {{item.isMine ? 'mine' : 'theirs'}}">{{item.body}}</view><view class="message-time">{{item.timeLabel}}</view></view>
+    </view>
+  </view>
+
+  <view class="composer">
+    <input placeholder="说点什么…" value="{{draft}}" confirm-type="send" maxlength="2000" bindinput="input" bindconfirm="send" />
+    <button class="primary send-button" hover-class="pressed" disabled="{{!canSend || sending || connectionState !== 'connected'}}" loading="{{sending}}" bindtap="send">{{sending ? '发送中' : '发送'}}</button>
+  </view>
+</view>

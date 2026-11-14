@@ -1,0 +1,90 @@
+page {
+  min-height: 100%;
+  background: #FFF7F1;
+  color: #5A4A48;
+  font-family: Nunito, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+button {
+  box-sizing: border-box;
+  margin: 0;
+  border: 0;
+  border-radius: 32rpx;
+  font-size: 25rpx;
+  line-height: 1.4;
+  transition: all 0.22s ease-out;
+}
+
+button::after { border: 0; }
+button[disabled] { opacity: .5; }
+input, textarea { color: #5A4A48; transition: all 0.22s ease-out; }
+input::placeholder, textarea::placeholder { color: #947C7A; }
+input:focus, textarea:focus { border-color: #FF8FA3; box-shadow: 0 0 0 5rpx rgba(255,143,163,.2); transform: scale(1.01); }
+
+.page { box-sizing: border-box; min-height: 100vh; padding: 24rpx 26rpx 145rpx; }
+.page-enter { animation: page-enter 0.22s ease-out both; }
+.muted { color: #947C7A; }
+.small { font-size: 21rpx; }
+.card {
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border: 1rpx solid #FCD5CE;
+  border-radius: 48rpx;
+  box-shadow: 0 8rpx 28rpx rgba(255,181,167,.12);
+}
+.primary { background: #FFB5A7; color: #5A4A48; font-weight: 720; }
+.secondary { background: #FCD5CE; color: #5A4A48; font-weight: 680; }
+.success { background: #A7D7A1; color: #5A4A48; }
+.danger-text { color: #F87171; }
+.pressed { opacity: .9; transform: scale(.96); transition: all 0.22s ease-out; }
+.section-title { color: #5A4A48; font-size: 30rpx; font-weight: 720; }
+.state-panel { padding: 62rpx 27rpx; border-radius: 48rpx; text-align: center; line-height: 1.8; }
+.state-title { margin-bottom: 8rpx; color: #5A4A48; font-size: 27rpx; font-weight: 680; }
+.state-copy { color: #947C7A; font-size: 22rpx; }
+.state-action { min-width: 216rpx; height: 72rpx; margin-top: 22rpx; padding: 0 24rpx; font-size: 22rpx; }
+.status { display: inline-flex; align-items: center; border-radius: 100rpx; padding: 6rpx 13rpx; background: #FFF7F1; color: #5A4A48; font-size: 20rpx; line-height: 1.35; }
+.status-published { background: #A7D7A1; color: #5A4A48; }
+.status-sold { background: #FCD5CE; color: #5A4A48; }
+.status-pending { background: #FFD6A5; color: #5A4A48; }
+.status-rejected { background: rgba(248,113,113,.14); color: #5A4A48; }
+.status-removed { background: #FFF7F1; color: #947C7A; }
+
+.skeleton-block, .skeleton-line {
+  background: linear-gradient(90deg, #FFF7F1 0%, #FCD5CE 50%, #FFF7F1 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.35s ease-in-out infinite;
+}
+.skeleton-block { border-radius: 22rpx; }
+.skeleton-line { height: 17rpx; border-radius: 100rpx; }
+.pin-glyph { position: relative; width: 19rpx; height: 19rpx; box-sizing: border-box; border: 2rpx solid currentColor; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); }
+.pin-glyph::after { position: absolute; top: 5rpx; left: 5rpx; width: 5rpx; height: 5rpx; border-radius: 50%; background: currentColor; content: ''; }
+.chat-glyph { position: relative; width: 23rpx; height: 17rpx; border: 2rpx solid currentColor; border-radius: 7rpx; }
+.chat-glyph::after { position: absolute; bottom: -5rpx; left: 4rpx; width: 6rpx; height: 6rpx; border-left: 2rpx solid currentColor; background: #FCD5CE; content: ''; transform: skewY(-35deg); }
+.plus-glyph { position: relative; width: 23rpx; height: 23rpx; }
+.plus-glyph::before, .plus-glyph::after { position: absolute; top: 10rpx; left: 2rpx; width: 19rpx; height: 2rpx; border-radius: 2rpx; background: currentColor; content: ''; }
+.plus-glyph::after { transform: rotate(90deg); }
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(32rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes skeleton-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+@keyframes empty-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5rpx); }
+}
+@keyframes heart-bounce {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.45); }
+  65% { transform: scale(.88); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter, .skeleton-block, .skeleton-line, .empty-mark, .state-icon, .heart-bounce, .pressed { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,27 @@
+.settings-page { padding-top:24rpx; }
+.account-card { display:flex; align-items:center; padding:21rpx; border-radius:30rpx; background:linear-gradient(130deg,#FCD5CE,#FFEAE1); }
+.account-avatar { display:flex; align-items:center; justify-content:center; width:78rpx; height:78rpx; flex:none; border-radius:50%; background:#F28C9D; color:#fff; font-size:31rpx; font-weight:750; }
+.account-copy { min-width:0; flex:1; margin-left:14rpx; }
+.account-name { color:#5A4A48; font-size:25rpx; font-weight:720; }
+.account-id { margin-top:4rpx; color:#947C7A; font-size:20rpx; }
+.account-mark { color:#947C7A; font-size:19rpx; }
+.settings-group { margin-top:25rpx; }
+.group-title { margin:0 5rpx 10rpx; color:#947C7A; font-size:21rpx; font-weight:650; }
+.settings-list { overflow:hidden; padding:0 18rpx; border-radius:27rpx; }
+.settings-row { display:flex; align-items:center; min-height:93rpx; border-bottom:1rpx solid #FFF0EA; }
+.settings-row:last-child { border-bottom:0; }
+.row-glyph { display:flex; align-items:center; justify-content:center; width:44rpx; height:44rpx; flex:none; margin-right:13rpx; border-radius:16rpx; background:#FFF0E8; color:#F16F7F; font-size:19rpx; font-weight:700; }
+.location-glyph { position:relative; width:17rpx; height:17rpx; margin-left:13rpx; margin-right:27rpx; border:2rpx solid #F16F7F; border-radius:50% 50% 50% 0; background:transparent; transform:rotate(-45deg); }
+.location-glyph::after { position:absolute; top:4rpx; left:4rpx; width:5rpx; height:5rpx; border-radius:50%; background:#F16F7F; content:''; }
+.history-glyph { position:relative; border:2rpx solid #F16F7F; border-radius:50%; background:transparent; }
+.history-glyph::before { position:absolute; top:8rpx; left:18rpx; width:2rpx; height:10rpx; background:#F16F7F; content:''; }
+.history-glyph::after { position:absolute; top:17rpx; left:18rpx; width:8rpx; height:2rpx; background:#F16F7F; content:''; }
+.account-glyph { background:#FCD5CE; }
+.draft-glyph { background:#FFE5D6; }
+.about-glyph { border-radius:50%; background:#E6F0E1; color:#668A62; }
+.safe-glyph { background:#E8EDF9; color:#6B7FA8; }
+.row-copy { min-width:0; flex:1; }
+.row-title { color:#5A4A48; font-size:22rpx; font-weight:600; }
+.row-note { overflow:hidden; margin-top:3rpx; color:#947C7A; font-size:18rpx; text-overflow:ellipsis; white-space:nowrap; }
+.row-tail { flex:none; margin-left:10rpx; color:#947C7A; font-size:19rpx; }
+.settings-publish { width:100%; height:78rpx; margin-top:29rpx; border-radius:27rpx; font-size:23rpx; }

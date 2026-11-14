@@ -1,0 +1,23 @@
+<view class="page community-page page-enter">
+  <view class="intro">
+    <view class="eyebrow">浏览范围</view>
+    <view class="title">看看身边的好物</view>
+    <view class="intro-copy">选择小区后，首页会优先展示这里的闲置。位置只在你主动点选时使用。</view>
+  </view>
+
+  <view wx:if="{{selection && selection.mode === 'selected' && selection.location}}" class="selected card">
+    <view class="selected-icon"><view class="pin-glyph"></view></view>
+    <view class="selected-info"><view class="selected-label">当前浏览小区</view><view class="name">{{selection.location.name || '已选择地点'}}</view><view class="muted address">{{selection.location.address}}</view></view>
+    <view class="check-mark">✓</view>
+  </view>
+
+  <button class="map-pick primary" hover-class="pressed" loading="{{selecting}}" disabled="{{selecting}}" bindtap="chooseLocation">{{selecting ? '正在打开地图…' : selection && selection.mode === 'selected' ? '更换小区' : '在地图上选择小区'}}</button>
+  <view class="map-note"><view class="note-mark">i</view><view><view class="note-title">使用微信地图选点</view><view class="muted">可以搜索小区名称，也可以直接点选地图位置。我们不会在后台自动定位。</view></view></view>
+
+  <view class="divider"><text>或</text></view>
+  <view class="all-option card" hover-class="pressed" hover-stay-time="100" bindtap="chooseAll">
+    <view class="all-icon">全</view>
+    <view class="all-text"><view class="name">浏览全部小区</view><view class="muted">不限制地点，看看更多邻居分享</view></view>
+    <view class="arrow">›</view>
+  </view>
+</view>

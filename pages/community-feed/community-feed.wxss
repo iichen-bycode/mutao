@@ -1,0 +1,60 @@
+.community-feed { padding: 0 26rpx 145rpx; }
+.community-hero { margin: 0 -26rpx 22rpx; padding: 35rpx 28rpx 25rpx; border-radius: 0 0 48rpx 48rpx; background: linear-gradient(145deg,#FCD5CE 0%,#FFE7DC 100%); }
+.hero-top { display:flex; align-items:center; justify-content:space-between; }
+.eyebrow { color:#947C7A; font-size:20rpx; font-weight:650; letter-spacing:1rpx; }
+.hero-title { margin-top:5rpx; color:#5A4A48; font-size:42rpx; line-height:1.25; font-weight:780; }
+.hero-stamp { display:flex; align-items:center; justify-content:center; width:74rpx; height:74rpx; border:2rpx solid rgba(255,143,163,.35); border-radius:28rpx; background:rgba(255,255,255,.8); color:#FF8FA3; font-size:33rpx; font-weight:760; transform:rotate(7deg); }
+.scope-pill { display:flex; align-items:center; gap:13rpx; height:72rpx; margin-top:24rpx; padding:0 18rpx; border:1rpx solid rgba(255,143,163,.2); border-radius:24rpx; background:#fff; color:#5A4A48; font-size:23rpx; }
+.scope-pill text { overflow:hidden; flex:1; text-overflow:ellipsis; white-space:nowrap; }
+.scope-change { padding:7rpx 16rpx; border-radius:100rpx; background:#FFF7F1; color:#FF8FA3; font-size:20rpx; }
+.hero-copy { margin:13rpx 3rpx 0; color:#947C7A; font-size:21rpx; }
+.publish-cta { display:flex; align-items:center; justify-content:center; gap:12rpx; height:76rpx; margin-top:19rpx; border-radius:26rpx; background:#FF8FA3; color:#fff; font-size:23rpx; font-weight:700; box-shadow:0 9rpx 20rpx rgba(255,143,163,.22); }
+.category-scroll { margin:0 -26rpx 22rpx; white-space:nowrap; }
+.category-row { display:inline-flex; gap:10rpx; padding:0 26rpx; }
+.category-chip { height:56rpx; padding:0 20rpx; border:1rpx solid #FCD5CE; border-radius:100rpx; background:#fff; color:#947C7A; line-height:54rpx; font-size:21rpx; transition:all .2s ease; }
+.category-chip.active { border-color:#FF8FA3; background:#FF8FA3; color:#fff; }
+.chip-pressed { opacity:.75; transform:scale(.96); }
+.feed-heading { display:flex; align-items:flex-end; justify-content:space-between; margin:0 2rpx 17rpx; }
+.section-title { color:#5A4A48; font-size:30rpx; font-weight:750; }
+.section-hint { margin-top:4rpx; color:#947C7A; font-size:20rpx; }
+.feed-total { padding:7rpx 14rpx; border-radius:100rpx; background:#FCD5CE; color:#5A4A48; font-size:20rpx; }
+.activity-list { display:flex; flex-direction:column; gap:16rpx; }
+.activity-card { padding:19rpx; border-color:rgba(252,213,206,.75); border-radius:34rpx; animation:activity-in .38s cubic-bezier(.2,.75,.3,1) both; }
+.activity-author { display:flex; align-items:center; gap:13rpx; }
+.activity-avatar,.activity-avatar-wrap { display:flex; align-items:center; justify-content:center; width:72rpx; height:72rpx; flex:none; overflow:hidden; border-radius:50%; background:#FBC7B3; color:#fff; font-size:26rpx; font-weight:700; }
+.activity-avatar { background:linear-gradient(140deg,#F5B89D,#F28C9D); }
+.activity-avatar-wrap image { width:100%; height:100%; }
+.author-copy { min-width:0; flex:1; }
+.author-name { color:#5A4A48; font-size:23rpx; font-weight:720; }
+.author-meta { overflow:hidden; margin-top:4rpx; color:#947C7A; font-size:19rpx; text-overflow:ellipsis; white-space:nowrap; }
+.activity-title { margin-top:17rpx; color:#5A4A48; font-size:25rpx; line-height:1.5; font-weight:650; }
+.activity-description { display:-webkit-box; overflow:hidden; margin-top:5rpx; color:#6F5D5A; font-size:22rpx; line-height:1.6; -webkit-box-orient:vertical; -webkit-line-clamp:3; }
+.activity-product { display:flex; align-items:center; gap:14rpx; margin-top:16rpx; padding:11rpx; border-radius:22rpx; background:#FFF7F1; }
+.product-image,.product-placeholder { display:flex; align-items:center; justify-content:center; width:118rpx; height:118rpx; flex:none; overflow:hidden; border-radius:16rpx; background:#FCD5CE; }
+.product-placeholder { flex-direction:column; color:#947C7A; font-size:17rpx; }
+.placeholder-mark { display:flex; align-items:center; justify-content:center; width:44rpx; height:44rpx; margin-bottom:4rpx; border-radius:16rpx; background:#fff; color:#FF8FA3; font-size:23rpx; font-weight:700; }
+.product-copy { min-width:0; flex:1; }
+.product-name { overflow:hidden; color:#5A4A48; font-size:21rpx; text-overflow:ellipsis; white-space:nowrap; }
+.product-price { margin-top:5rpx; color:#F16F7F; font-size:25rpx; font-weight:750; }
+.product-community { overflow:hidden; margin-top:4rpx; color:#947C7A; font-size:18rpx; text-overflow:ellipsis; white-space:nowrap; }
+.product-arrow { color:#B49A95; font-size:32rpx; }
+.activity-actions { display:flex; align-items:center; justify-content:space-between; margin-top:15rpx; padding-top:13rpx; border-top:1rpx solid #FFF0EA; }
+.activity-action { display:flex; align-items:center; gap:8rpx; min-height:48rpx; color:#947C7A; font-size:20rpx; }
+.heart { color:#F28C9D; font-size:27rpx; }
+.heart-active { animation:heart-bounce .42s ease; }
+.action-arrow { color:#F28C9D; font-size:27rpx; }
+.state-panel { margin-top:18rpx; }
+.state-icon { display:flex; align-items:center; justify-content:center; width:76rpx; height:76rpx; margin:0 auto 15rpx; border-radius:28rpx; background:#FCD5CE; color:#FF8FA3; font-size:31rpx; font-weight:750; animation:empty-float 1.8s ease-in-out 2; }
+.state-action { min-width:220rpx; height:72rpx; margin-top:22rpx; font-size:22rpx; }
+.skeleton-activity { padding:20rpx; }
+.skeleton-author { display:flex; align-items:center; gap:13rpx; }
+.skeleton-avatar { width:72rpx; height:72rpx; border-radius:50%; }
+.skeleton-author-copy { display:flex; flex:1; flex-direction:column; gap:10rpx; }
+.skeleton-author-copy .skeleton-line:first-child { width:42%; }
+.skeleton-author-copy .short-line { width:68%; }
+.title-line { width:77%; margin-top:20rpx; }
+.skeleton-product { height:140rpx; margin-top:16rpx; }
+.skeleton-actions { display:flex; justify-content:space-between; margin-top:17rpx; }
+.skeleton-actions .skeleton-line { width:24%; }
+@keyframes activity-in { from { opacity:0; transform:translateY(22rpx); } to { opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .activity-card,.heart-active,.state-icon { animation:none!important; } }

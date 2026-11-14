@@ -1,0 +1,27 @@
+<view class="community-feed page page-enter">
+  <view class="community-hero">
+    <view class="hero-top"><view><view class="eyebrow">睦淘 · 邻里集市</view><view class="hero-title">社区动态</view></view><view class="hero-stamp">邻</view></view>
+    <view class="scope-pill" hover-class="pressed" bindtap="openCommunity"><view class="pin-glyph"></view><text>{{selection && selection.mode === 'selected' && selection.location ? (selection.location.name || selection.location.address) : '全部小区'}}</text><view class="scope-change">切换</view></view>
+    <view class="hero-copy">看看附近邻居正在分享什么好物</view>
+    <button class="publish-cta" hover-class="pressed" bindtap="goPublish"><view class="plus-glyph"></view>发布一件闲置</button>
+  </view>
+
+  <scroll-view scroll-x class="category-scroll" show-scrollbar="false"><view class="category-row">
+    <view class="category-chip {{categoryId === '' ? 'active' : ''}}" data-id="" hover-class="chip-pressed" bindtap="selectCategory">全部</view>
+    <view wx:for="{{categories}}" wx:key="id" class="category-chip {{categoryId == item.id ? 'active' : ''}}" data-id="{{item.id}}" hover-class="chip-pressed" bindtap="selectCategory">{{item.name}}</view>
+  </view></scroll-view>
+
+  <view class="feed-heading"><view><view class="section-title">邻里好物</view><view class="section-hint">{{selection && selection.mode === 'selected' && selection.location ? '这个小区的新鲜发布' : '社区里最新发布的信息'}}</view></view><view class="feed-total">{{total}} 条</view></view>
+
+  <view wx:if="{{items.length}}" class="activity-list">
+    <view wx:for="{{items}}" wx:key="id" class="activity-card card" style="animation-delay: {{index * 55}}ms">
+      <view class="activity-author"><view wx:if="{{item.seller_avatar && !item.avatarError}}" class="activity-avatar-wrap"><image class="activity-avatar" src="{{item.seller_avatar}}" mode="aspectFill" data-id="{{item.id}}" binderror="onAvatarError" /></view><view wx:else class="activity-avatar">{{item.avatarInitial}}</view><view class="author-copy"><view class="author-name">{{item.seller_nickname || '邻居'}}</view><view class="author-meta">{{item.community_name || '睦淘社区'}}<text wx:if="{{item.timeLabel}}"> · {{item.timeLabel}}</text></view></view><view wx:if="{{item.status === 'sold'}}" class="status status-sold">已售出</view></view>
+      <view class="activity-title">{{item.title}}</view><view class="activity-description">{{item.description}}</view>
+      <view class="activity-product" data-id="{{item.id}}" hover-class="pressed" bindtap="openDetail"><image wx:if="{{item.images.length && !item.imageError}}" class="product-image" src="{{item.images[0]}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onImageError" /><view wx:else class="product-placeholder"><view class="placeholder-mark">邻</view><text>邻里好物</text></view><view class="product-copy"><view class="product-name">{{item.title}}</view><view class="product-price">¥{{item.price}}</view><view class="product-community">{{item.community_name || '欢迎邻居来看看'}}</view></view><view class="product-arrow">›</view></view>
+      <view class="activity-actions"><view class="activity-action" data-id="{{item.id}}" hover-class="pressed" bindtap="toggleFavorite"><text class="heart {{item.favorited ? 'heart-active' : ''}}">{{item.favorited ? '♥' : '♡'}}</text>{{item.favorited ? '已收藏' : '收藏'}}</view><view class="activity-action" data-id="{{item.id}}" hover-class="pressed" catchtap="openDetail">查看详情 <text class="action-arrow">›</text></view></view>
+    </view>
+  </view>
+  <view wx:elif="{{loading}}" class="activity-list" aria-hidden="true"><view class="activity-card card skeleton-activity"><view class="skeleton-author"><view class="skeleton-block skeleton-avatar"></view><view class="skeleton-author-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view></view><view class="skeleton-line title-line"></view><view class="skeleton-block skeleton-product"></view><view class="skeleton-actions"><view class="skeleton-line"></view><view class="skeleton-line"></view></view></view><view class="activity-card card skeleton-activity"><view class="skeleton-author"><view class="skeleton-block skeleton-avatar"></view><view class="skeleton-author-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view></view><view class="skeleton-line title-line"></view><view class="skeleton-block skeleton-product"></view><view class="skeleton-actions"><view class="skeleton-line"></view><view class="skeleton-line"></view></view></view></view>
+  <view wx:elif="{{error}}" class="state-panel card"><view class="state-icon">!</view><view class="state-title">社区动态暂时没加载出来</view><view class="state-copy">检查网络后再试一次</view><button class="primary state-action" hover-class="pressed" bindtap="refresh">重新加载</button></view>
+  <view wx:else class="state-panel card"><view class="state-icon">邻</view><view class="state-title">这里还没有邻里动态</view><view class="state-copy">换个小区看看，或发布一件闲置开启分享</view><button class="primary state-action" hover-class="pressed" bindtap="goPublish">发布闲置</button></view>
+</view>

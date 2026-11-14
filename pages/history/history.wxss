@@ -1,0 +1,24 @@
+.history-page { padding-top:32rpx; }
+.history-head { display:flex; align-items:center; justify-content:space-between; margin:0 3rpx 24rpx; }
+.eyebrow { color:#947C7A; font-size:20rpx; }
+.page-title { margin-top:4rpx; color:#5A4A48; font-size:38rpx; font-weight:760; }
+.head-copy { margin-top:5rpx; font-size:20rpx; }
+.clear-link { padding:12rpx 17rpx; border:1rpx solid #FCD5CE; border-radius:100rpx; color:#F16F7F; font-size:20rpx; }
+.history-list { display:flex; flex-direction:column; gap:12rpx; }
+.history-item { display:flex; align-items:center; min-height:148rpx; padding:14rpx; border-radius:30rpx; animation:history-in .32s ease-out both; }
+.history-image { width:120rpx; height:120rpx; flex:none; margin-right:15rpx; border-radius:20rpx; background:#FCD5CE; }
+.image-placeholder { display:flex; align-items:center; justify-content:center; color:#FF8FA3; font-size:30rpx; font-weight:700; }
+.history-main { min-width:0; flex:1; }
+.history-title { overflow:hidden; color:#5A4A48; font-size:23rpx; font-weight:650; text-overflow:ellipsis; white-space:nowrap; }
+.history-price { margin-top:5rpx; color:#F16F7F; font-size:25rpx; font-weight:750; }
+.history-meta { overflow:hidden; margin-top:4rpx; color:#947C7A; font-size:19rpx; text-overflow:ellipsis; white-space:nowrap; }
+.history-arrow { margin-left:10rpx; color:#B49A95; font-size:31rpx; }
+.skeleton-history .history-skeleton-copy { display:flex; flex:1; flex-direction:column; gap:12rpx; }
+.skeleton-history .skeleton-line:first-child { width:82%; }
+.skeleton-history .short-line { width:45%; }
+.skeleton-history .skeleton-line:last-child { width:63%; }
+.state-panel { margin-top:16rpx; }
+.state-icon { display:flex; align-items:center; justify-content:center; width:78rpx; height:78rpx; margin:0 auto 15rpx; border-radius:27rpx; background:#FCD5CE; color:#FF8FA3; font-size:31rpx; font-weight:700; animation:empty-float 1.8s ease-in-out 2; }
+.state-action { min-width:220rpx; height:72rpx; margin-top:21rpx; font-size:22rpx; }
+@keyframes history-in { from { opacity:0; transform:translateY(15rpx); } to { opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .history-item,.state-icon { animation:none!important; } }

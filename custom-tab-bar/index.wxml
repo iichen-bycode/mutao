@@ -1,0 +1,6 @@
+<view class="tab-shell"><view class="tabbar">
+  <view wx:for="{{list}}" wx:key="pagePath" class="tab-item {{selected === index ? 'tab-selected' : ''}} {{item.icon === 'publish' ? 'tab-publish' : ''}}" data-index="{{index}}" bindtap="switchTab">
+    <view class="tab-icon tab-{{item.icon}}"><view wx:if="{{item.icon === 'publish'}}" class="tab-plus"></view><view wx:elif="{{item.icon === 'home'}}" class="home-roof"></view><view wx:if="{{item.icon === 'community'}}" class="community-dot community-dot-one"></view><view wx:if="{{item.icon === 'community'}}" class="community-dot community-dot-two"></view><view wx:elif="{{item.icon === 'message'}}" class="message-tail"></view><view wx:elif="{{item.icon === 'me'}}" class="me-head"></view></view>
+    <view class="tab-label">{{item.text}}</view>
+  </view>
+</view></view>
