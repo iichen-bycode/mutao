@@ -1,0 +1,15 @@
+<view class="page records-page page-enter">
+  <view class="page-title">我的评论</view>
+  <view class="page-intro">你在邻里话题和求助帖子下留下的内容。</view>
+  <view wx:if="{{items.length}}" class="record-list">
+    <view wx:for="{{items}}" wx:key="id" class="comment-card card" data-id="{{item.post_id}}" hover-class="pressed" bindtap="openPost">
+      <view class="comment-meta"><view class="post-type">{{item.typeLabel}}</view><view class="comment-time">{{item.timeLabel}}</view></view>
+      <view class="post-title">{{item.post_title}}</view>
+      <view class="comment-content">{{item.content}}</view>
+      <view class="comment-footer">{{item.community_name || '睦淘社区'}}<text>查看帖子 ›</text></view>
+    </view>
+  </view>
+  <view wx:elif="{{loading}}" class="record-list"><view class="comment-card card skeleton-record"><view class="skeleton-line short-line"></view><view class="skeleton-line"></view><view class="skeleton-line"></view></view><view class="comment-card card skeleton-record"><view class="skeleton-line short-line"></view><view class="skeleton-line"></view><view class="skeleton-line"></view></view></view>
+  <view wx:elif="{{error}}" class="state-panel card"><view class="state-title">评论记录暂时无法加载</view><view class="state-copy">检查网络连接后再试</view><button class="primary state-action" bindtap="retry">重新加载</button></view>
+  <view wx:else class="state-panel card"><view class="state-mark">评</view><view class="state-title">还没有发表过评论</view><view class="state-copy">去社区话题里和邻居交流吧</view><button class="primary state-action" bindtap="goCommunity">去社区看看</button></view>
+</view>

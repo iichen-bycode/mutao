@@ -1,0 +1,24 @@
+.favorites-page { padding-top:28rpx; padding-bottom:150rpx; }
+.favorites-head { margin:0 2rpx 20rpx; }
+.page-title { margin:6rpx 0; color:#5A4A48; font-size:36rpx; font-weight:740; }
+.page-intro { color:#806C6A; font-size:21rpx; }
+.favorites-grid { display:flex; flex-wrap:wrap; gap:12rpx; }
+.favorite-card { overflow:hidden; width:calc(50% - 6rpx); min-width:0; border-radius:27rpx; animation:favorite-in .28s ease-out both; }
+.favorite-pressed { opacity:.86; }
+.favorite-image { display:flex; align-items:center; justify-content:center; width:100%; height:290rpx; background:linear-gradient(145deg,#FFF1E8,#F7E9E5); }
+.image-placeholder { color:#C59D94; font-size:26rpx; }
+.placeholder-mark { display:flex; align-items:center; justify-content:center; width:58rpx; height:58rpx; border-radius:21rpx; background:#FFF7F1; }
+.favorite-copy { min-height:98rpx; padding:10rpx 13rpx 13rpx; }
+.favorite-price { margin-bottom:2rpx; color:#F16F7F; font-size:24rpx; line-height:1.2; font-weight:760; }
+.favorite-title { overflow:hidden; color:#5A4A48; font-size:19rpx; line-height:1.4; text-overflow:ellipsis; white-space:nowrap; }
+.favorite-meta { overflow:hidden; margin-top:4rpx; color:#947C7A; font-size:16rpx; text-overflow:ellipsis; white-space:nowrap; }
+.favorite-copy .status { margin-top:7rpx; }
+.state-panel { width:100%; margin-top:0; padding:38rpx 23rpx; }
+.state-mark { display:flex; align-items:center; justify-content:center; width:64rpx; height:64rpx; margin:0 auto 12rpx; border-radius:23rpx; background:#FFF0E8; color:#E98F81; font-size:27rpx; font-weight:700; }
+.state-action { min-width:190rpx; height:65rpx; margin-top:17rpx; font-size:20rpx; line-height:65rpx; }
+.skeleton-grid .favorite-card { padding-bottom:12rpx; }
+.skeleton-copy { display:flex; flex-direction:column; gap:10rpx; }
+.skeleton-line { width:80%; height:16rpx; border-radius:100rpx; background:linear-gradient(90deg,#FFF7F1 0%,#FCD5CE 50%,#FFF7F1 100%); background-size:200% 100%; animation:skeleton-shimmer 1.35s ease-in-out infinite; }
+.short-line { width:55%; }
+@keyframes favorite-in { from { opacity:0; transform:translateY(10rpx); } to { opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .favorite-card { animation:none!important; } }

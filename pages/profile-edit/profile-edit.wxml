@@ -1,0 +1,11 @@
+<view class="page profile-edit page-enter">
+  <view wx:if="{{loading}}" class="state-panel card"><view class="state-copy">正在加载个人资料…</view></view>
+  <view wx:elif="{{error}}" class="state-panel card"><view class="state-title">个人资料暂时无法加载</view><view class="state-copy">检查网络或重新登录后再试</view><button class="primary state-action" hover-class="pressed" bindtap="retry">重新加载</button></view>
+  <view wx:else class="edit-card card">
+    <view class="avatar-area"><image wx:if="{{profile.avatarUrl}}" class="avatar" src="{{profile.avatarUrl}}" mode="aspectFill" /><view wx:else class="avatar avatar-fallback">{{profile.initial}}</view><view class="avatar-note">头像来自当前微信账号</view></view>
+    <view class="field-label">昵称</view>
+    <input class="nickname-input" value="{{nickname}}" maxlength="80" placeholder="输入社区里显示的昵称" bindinput="onInput" />
+    <view class="input-note">昵称会显示在你的闲置和邻里帖子中。</view>
+  </view>
+  <button wx:if="{{!loading && !error}}" class="primary save-button" disabled="{{saving}}" hover-class="pressed" bindtap="save">{{saving ? '保存中…' : '保存资料'}}</button>
+</view>

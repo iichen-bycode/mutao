@@ -4,7 +4,7 @@ Page({
   data: { selection: null, selecting: false },
 
   onLoad() {
-    this.setData({ selection: app.globalData.communitySelection || wx.getStorageSync('communitySelection') || { mode: 'all', location: null } });
+    this.setData({ selection: app.globalData.listingBrowseSelection || wx.getStorageSync('listingBrowseSelection') || { mode: 'all', location: null } });
   },
 
   async chooseLocation() {
@@ -21,7 +21,7 @@ Page({
     }
     wx.chooseLocation({
       success: (location) => {
-        app.selectCommunity(location);
+        app.setListingBrowseSelection(location);
         this.setData({ selection: { mode: 'selected', location }, selecting: false });
         const pages = getCurrentPages();
         const previous = pages[pages.length - 2];
@@ -38,7 +38,7 @@ Page({
 
   chooseAll() {
     if (this.data.selecting) return;
-    app.clearCommunity();
+    app.clearListingBrowseSelection();
     const pages = getCurrentPages();
     const previous = pages[pages.length - 2];
     if (previous && previous.refreshFeed) previous.refreshFeed();

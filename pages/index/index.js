@@ -1,9 +1,19 @@
 const app = getApp();
 const { request } = require('../../utils/request');
 const { formatListTime } = require('../../utils/format');
+const { chooseCommunityLocation, isLocationCancel } = require('../../utils/community-picker');
+const { syncCustomTabBar } = require('../../utils/tab-bar');
+
+function formatCommunityName(selection) {
+  const location = selection && selection.mode === 'selected' && selection.location;
+  if (!location) return '全部小区';
+  const name = String(location.name || location.address || '').trim() || '已选小区';
+  const characters = Array.from(name);
+  return characters.length > 8 ? characters.slice(0, 8).join('') + '…' : name;
+}
 
 Page({
-  data: { selection: null, categories: [], categoryId: '', keyword: '', items: [], page: 1, total: 0, hasMore: true, loading: false, error: '' },
+  data: { greeting: '早上好', selection: null, communityName: '全部小区', categories: [], categoryId: '', keyword: '', items: [], nearbyItems: [], recommendedItems: [], moreItems: [], selectingCommunity: false, page: 1, total: 0, hasMore: true, loading: false, error: '' },
 
   onLoad() {
     this.syncSelection();
@@ -11,16 +21,51 @@ Page({
     this.refreshFeed();
   },
 
-  onShow() { this.syncSelection(); },
+  onShow() {
+    syncCustomTabBar(this);
+    const previousKey = this.selectionKey(this.data.selection);
+    this.syncSelection();
+    if (previousKey && previousKey !== this.selectionKey(this.data.selection)) this.refreshFeed();
+  },
   onPullDownRefresh() { this.refreshFeed().finally(() => wx.stopPullDownRefresh()); },
   onReachBottom() { this.loadMore(); },
 
   syncSelection() {
-    const selection = app.globalData.communitySelection || wx.getStorageSync('communitySelection') || { mode: 'all', location: null };
-    this.setData({ selection });
+    const selection = app.globalData.listingBrowseSelection || wx.getStorageSync('listingBrowseSelection') || { mode: 'all', location: null };
+    this.setData({ selection, communityName: formatCommunityName(selection) });
   },
 
-  openCommunity() { wx.navigateTo({ url: '/pages/community/community' }); },
+  selectionKey(selection) {
+    const location = selection && selection.location;
+    return selection && selection.mode === 'selected' && location ? [location.name, location.latitude, location.longitude].join('|') : 'all';
+  },
+
+  async chooseCommunity() {
+    if (this.data.selectingCommunity) return;
+    this.setData({ selectingCommunity: true });
+    try {
+      const location = await chooseCommunityLocation();
+      app.setListingBrowseSelection(location);
+      const selection = { mode: 'selected', location };
+      this.setData({ selection, communityName: formatCommunityName(selection), selectingCommunity: false });
+      await this.refreshFeed();
+    } catch (error) {
+      if (error && error.code === 'PRIVACY_DENIED') wx.showToast({ title: '同意位置隐私授权后，才能使用地图选点', icon: 'none' });
+      else if (!isLocationCancel(error)) wx.showToast({ title: '无法打开地图，请检查微信的位置权限', icon: 'none' });
+    } finally {
+      if (this.data.selectingCommunity) this.setData({ selectingCommunity: false });
+    }
+  },
+
+  clearCommunity(event) {
+    if (event && event.stopPropagation) event.stopPropagation();
+    app.clearListingBrowseSelection();
+    const selection = { mode: 'all', location: null };
+    this.setData({ selection, communityName: formatCommunityName(selection) });
+    this.refreshFeed();
+  },
+
+  goMessages() { wx.switchTab({ url: '/pages/conversations/conversations' }); },
   onSearchInput(event) { this.setData({ keyword: event.detail.value }); },
   onSearchConfirm() { this.refreshFeed(); },
   clearSearch() { this.setData({ keyword: '' }); this.refreshFeed(); },
@@ -46,7 +91,7 @@ Page({
     if (this.data.loading && !replace) return;
     this.setData({ loading: true, error: '' });
     try {
-      const selection = app.globalData.communitySelection || wx.getStorageSync('communitySelection') || { mode: 'all' };
+      const selection = app.globalData.listingBrowseSelection || wx.getStorageSync('listingBrowseSelection') || { mode: 'all' };
       const query = ['page=' + page, 'pageSize=20'];
       if (selection.mode === 'selected' && selection.location) {
         const location = selection.location;
@@ -65,7 +110,13 @@ Page({
         timeLabel: formatListTime(item.created_at || item.published_at)
       }));
       const items = replace ? pageItems : this.data.items.concat(pageItems);
-      this.setData({ items, total: Number(result.total || items.length), page, hasMore: result.hasMore, loading: false });
+      this.setData({
+        items,
+        nearbyItems: items.slice(0, 4),
+        recommendedItems: items.slice(4, 6),
+        moreItems: items.slice(6),
+        total: Number(result.total || items.length), page, hasMore: result.hasMore, loading: false
+      });
     } catch (_error) {
       if (sequence === this.feedSequence) this.setData({ loading: false, error: '信息暂时无法加载，请重试' });
     }

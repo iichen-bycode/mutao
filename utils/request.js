@@ -17,7 +17,9 @@ function request(path, options = {}) {
           }
           const message = response.data && (response.data.message || response.data.error) || '请求失败';
           if (!options.silent) wx.showToast({ title: Array.isArray(message) ? message[0] : String(message), icon: 'none' });
-          reject(new Error(Array.isArray(message) ? message[0] : String(message)));
+          const requestError = new Error(Array.isArray(message) ? message[0] : String(message));
+          requestError.code = response.data && response.data.code;
+          reject(requestError);
         }
       },
       fail(error) {

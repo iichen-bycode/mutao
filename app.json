@@ -4,12 +4,20 @@
     "pages/community-feed/community-feed",
     "pages/community/community",
     "pages/history/history",
+    "pages/favorites/favorites",
     "pages/settings/settings",
     "pages/detail/detail",
+    "pages/profile/profile",
+    "pages/profile-edit/profile-edit",
     "pages/publish/publish",
     "pages/conversations/conversations",
     "pages/chat/chat",
-    "pages/me/me"
+    "pages/me/me",
+    "pages/my-reports/my-reports",
+    "pages/my-comments/my-comments",
+    "pages/community-post-detail/community-post-detail",
+    "pages/community-posts/community-posts",
+    "pages/community-post-create/community-post-create"
   ],
   "window": {
     "navigationBarTitleText": "睦淘",

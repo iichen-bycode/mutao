@@ -1,29 +1,42 @@
 <view wx:if="{{item}}" class="detail-page page-enter">
-  <swiper wx:if="{{item.images.length && !galleryError}}" class="gallery" indicator-dots="{{item.images.length > 1}}" indicator-active-color="#FF8FA3" circular="{{item.images.length > 1}}">
-    <swiper-item wx:for="{{item.images}}" wx:key="*this" data-current="{{item}}" bindtap="previewImage"><image class="gallery-image" src="{{item}}" mode="aspectFill" lazy-load="true" binderror="onGalleryError" /></swiper-item>
-  </swiper>
-  <view wx:else class="gallery-placeholder"><view class="placeholder-icon">邻</view><view>卖家暂未添加图片</view></view>
+  <view class="gallery-shell">
+    <swiper wx:if="{{gallerySlides.length}}" class="gallery" current="{{galleryIndex}}" indicator-dots="{{gallerySlides.length > 1}}" indicator-active-color="#FF8FA3" circular="{{gallerySlides.length > 1}}" bindchange="onGalleryChange">
+      <swiper-item wx:for="{{gallerySlides}}" wx:key="url" data-current="{{item.url}}" bindtap="previewImage"><image wx:if="{{!item.failed}}" class="gallery-image" src="{{item.url}}" mode="aspectFill" lazy-load="true" data-index="{{item.index}}" binderror="onGalleryError" /><view wx:else class="gallery-image-placeholder"><view class="placeholder-icon">邻</view><view>这张图片暂时无法显示</view></view></swiper-item>
+    </swiper>
+    <view wx:else class="gallery-placeholder"><view class="placeholder-icon">邻</view><view>卖家暂未添加图片</view></view>
+    <view wx:if="{{gallerySlides.length > 1}}" class="gallery-count">{{galleryIndex + 1}} / {{gallerySlides.length}}</view>
+    <view wx:if="{{item.status !== 'published'}}" class="gallery-status">{{item.status === 'sold' ? '已售出' : item.status === 'pending' ? '待审核' : item.status === 'rejected' ? '未通过审核' : '已下架'}}</view>
+  </view>
 
   <view class="price-card card">
-    <view class="price"><text>¥</text>{{item.price}}</view>
-    <view wx:if="{{item.status !== 'published'}}" class="status status-{{item.status}}">{{item.status === 'sold' ? '已售出' : item.status === 'pending' ? '待审核' : item.status === 'rejected' ? '未通过审核' : '已下架'}}</view>
+    <view class="price-line"><view class="price"><text>¥</text>{{item.price}}</view></view>
     <view class="title">{{item.title}}</view>
-    <view class="meta-row"><text class="meta-pill">{{item.condition_label || '闲置好物'}}</text><text class="meta-dot">·</text><text class="muted">{{item.view_count || 0}} 次浏览</text></view>
+    <view class="meta-row"><text class="meta-delivery">{{item.delivery_type === 'delivery' ? '同城配送' : item.delivery_type === 'discuss' ? '协商交接' : '小区自提'}}</text><text class="meta-pill">{{item.category_name || '邻里闲置'}}</text><text class="meta-dot">·</text><text>{{item.community_name || '邻里社区'}}</text></view>
+    <view class="activity-meta"><text class="meta-pin"></text>{{item.view_count || 0}}次浏览 <text class="meta-dot">·</text><text class="meta-heart">♥</text>{{item.favorite_count || 0}}收藏</view>
+    <view wx:if="{{item.status !== 'published'}}" class="status-line"><text class="status status-{{item.status}}">{{item.status === 'sold' ? '已售出' : item.status === 'pending' ? '待审核' : item.status === 'rejected' ? '未通过审核' : '已下架'}}</text></view>
     <view wx:if="{{item.isOwner && item.moderation_note}}" class="moderation-note"><text class="note-label">审核说明</text><text>{{item.moderation_note}}</text></view>
+    <view class="spec-grid">
+      <view class="spec-cell"><view class="spec-label">成色</view><view class="spec-value">{{item.condition_label || '闲置好物'}}</view></view>
+      <view class="spec-cell"><view class="spec-label">原价</view><view class="spec-value">{{item.original_price_label}}</view></view>
+      <view class="spec-cell"><view class="spec-label">交接方式</view><view class="spec-value">{{item.delivery_type === 'delivery' ? '同城配送' : item.delivery_type === 'discuss' ? '协商交接' : '小区自提'}}</view></view>
+      <view class="spec-cell"><view class="spec-label">距离所选小区</view><view class="spec-value">{{item.distance_label}}</view></view>
+    </view>
   </view>
 
-  <view class="seller-card card">
+  <view class="description card"><view class="block-title">物品说明</view><view class="description-text">{{item.description || '卖家暂未补充描述'}}</view></view>
+
+  <view class="seller-card card" hover-class="{{item.isOwner ? '' : 'pressed'}}" bindtap="openSellerProfile">
     <image wx:if="{{item.seller_avatar}}" class="avatar" src="{{item.seller_avatar}}" mode="aspectFill" />
     <view wx:else class="avatar avatar-fallback">{{item.seller_initial || '邻'}}</view>
-    <view class="seller-info"><view class="seller-name">{{item.isOwner ? '这是你发布的闲置' : (item.seller_nickname || '邻居')}}</view><view class="muted seller-meta">{{item.community_name || '邻里分享'}}<text wx:if="{{item.category_name}}"> · {{item.category_name}}</text></view></view>
+    <view class="seller-info"><view class="seller-name">{{item.isOwner ? '这是你发布的闲置' : (item.seller_nickname || '邻居')}}</view><view class="muted seller-meta">{{item.community_name || '邻里社区'}}<text wx:if="{{item.category_name}}"> · {{item.category_name}}</text></view></view>
+    <button wx:if="{{!item.isOwner}}" class="seller-message" hover-class="pressed" catchtap="messageSeller">私聊</button>
   </view>
 
-  <view class="description card"><view class="block-title">物品描述</view><view class="description-text">{{item.description || '卖家暂未补充描述'}}</view></view>
   <view wx:if="{{item.contact_type !== 'none' && item.contact_value && !item.isOwner}}" class="contact-card card" hover-class="pressed" bindtap="callSeller"><view class="contact-head"><view class="block-title">卖家公开的联系方式</view><view class="contact-action">{{item.contact_type === 'phone' || item.contact_type === 'both' ? '拨打' : '复制'}}</view></view><view class="contact-value">{{item.contact_value}}</view><view class="muted small">点击{{item.contact_type === 'phone' || item.contact_type === 'both' ? '拨打电话' : '复制微信号'}}</view></view>
   <view wx:if="{{!item.isOwner}}" class="report-link" hover-class="pressed" bindtap="report">举报不合适的信息</view>
 
-  <view wx:if="{{item.isOwner && item.status === 'published'}}" class="bottom-actions owner-actions"><button class="primary action-button" hover-class="pressed" loading="{{markingSold}}" bindtap="markSold">标记为已售出</button></view>
-  <view wx:elif="{{!item.isOwner}}" class="bottom-actions"><button class="favorite action-button" hover-class="pressed" bindtap="toggleFavorite"><text class="favorite-star {{favoriteBounce ? 'heart-bounce' : ''}}">{{favorite ? '♥' : '♡'}}</text>{{favorite ? '已收藏' : '收藏'}}</button><button class="primary message-button action-button" hover-class="pressed" bindtap="messageSeller">{{item.status === 'sold' ? '咨询卖家' : '聊一聊'}}</button></view>
+  <view wx:if="{{item.isOwner && item.status === 'published'}}" class="bottom-actions owner-actions"><button class="primary action-button" hover-class="pressed" loading="{{markingSold}}" bindtap="markSold"><text>标记为已售出</text></button></view>
+  <view wx:elif="{{!item.isOwner}}" class="bottom-actions"><button class="favorite action-button" hover-class="pressed" bindtap="toggleFavorite"><text class="favorite-star {{favoriteBounce ? 'heart-bounce' : ''}}">{{favorite ? '♥' : '♡'}}</text>{{favorite ? '已收藏' : '收藏'}}</button><button class="primary message-button action-button" hover-class="pressed" bindtap="messageSeller"><text class="chat-icon"></text>私聊问细节</button></view>
 </view>
 <view wx:elif="{{loading}}" class="detail-skeleton page-enter"><view class="skeleton-block skeleton-gallery"></view><view class="card skeleton-detail-card"><view class="skeleton-line skeleton-price-line"></view><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view><view class="card skeleton-seller-card"><view class="skeleton-block skeleton-avatar"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view></view></view>
 <view wx:elif="{{error}}" class="state-panel"><view class="state-title">暂时无法打开这条信息</view><view class="state-copy">它可能已下架，或网络暂时不可用</view><button class="primary state-action" hover-class="pressed" bindtap="retry">重新加载</button></view>

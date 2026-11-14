@@ -1,7 +1,70 @@
-<view class="page settings-page page-enter">
-  <view class="account-card card"><view class="account-avatar">{{profile.initial}}</view><view class="account-copy"><view class="account-name">{{profile.nickname || '邻居'}}</view><view class="account-id">睦淘社区成员</view></view><view class="account-mark">个人资料</view></view>
-  <view class="settings-group"><view class="group-title">账号与社区</view><view class="settings-list card"><view class="settings-row" hover-class="pressed" bindtap="openCommunity"><view class="row-glyph location-glyph"></view><view class="row-copy"><view class="row-title">当前浏览小区</view><view class="row-note">仅在你主动选择时使用地图</view></view><view class="row-tail">更改 ›</view></view><view class="settings-row"><view class="row-glyph account-glyph">邻</view><view class="row-copy"><view class="row-title">登录账号</view><view class="row-note">账号信息由睦淘安全保存</view></view><view class="row-tail">已登录</view></view></view></view>
-  <view class="settings-group"><view class="group-title">我的数据</view><view class="settings-list card"><view class="settings-row" hover-class="pressed" bindtap="clearHistory"><view class="row-glyph history-glyph"></view><view class="row-copy"><view class="row-title">清空浏览记录</view><view class="row-note">最近浏览 {{recentCount}} 件好物</view></view><view class="row-tail">清理 ›</view></view><view class="settings-row" hover-class="pressed" bindtap="clearDraft"><view class="row-glyph draft-glyph">草</view><view class="row-copy"><view class="row-title">发布草稿</view><view class="row-note">{{hasDraft ? '有一条未提交的草稿' : '当前没有保存的草稿'}}</view></view><view class="row-tail">{{hasDraft ? '删除 ›' : '管理 ›'}}</view></view></view></view>
-  <view class="settings-group"><view class="group-title">帮助与说明</view><view class="settings-list card"><view class="settings-row"><view class="row-glyph about-glyph">i</view><view class="row-copy"><view class="row-title">关于睦淘</view><view class="row-note">让邻里闲置继续流转</view></view><view class="row-tail">v1.0.2</view></view><view class="settings-row"><view class="row-glyph safe-glyph">安</view><view class="row-copy"><view class="row-title">线下交易提醒</view><view class="row-note">选择安全、公开的地点完成交易</view></view></view></view></view>
-  <button class="primary settings-publish" hover-class="pressed" bindtap="goPublish">发布一件闲置</button>
+<view class="settings-shell">
+<view class="page settings-page {{themeClass}} page-enter">
+  <view wx:if="{{loading}}" class="loading-state"><view class="loading-dot"></view><text>正在加载设置…</text></view>
+  <view wx:elif="{{error}}" class="state-card"><view class="state-title">设置暂时无法加载</view><view class="state-copy">请检查网络连接后重试</view><button class="retry-button" bindtap="retry">重新加载</button></view>
+  <block wx:else>
+    <view class="settings-group">
+      <view class="group-title">账号设置</view>
+      <view class="settings-list">
+        <!-- <view class="settings-row" hover-class="row-pressed" bindtap="explainPassword"><view class="row-icon glyph-lock"></view><view class="row-title">修改登录密码</view><view class="row-tail">›</view></view> -->
+        <view class="settings-row" hover-class="row-pressed" bindtap="editPhone"><view class="row-icon glyph-phone"></view><view class="row-title">{{phoneBusy ? '正在保存…' : '绑定手机号'}}</view><view class="row-value">{{profile.maskedPhone || '立即绑定'}}</view><view class="row-tail">›</view></view>
+        <view class="settings-row" hover-class="row-pressed" bindtap="editJoinedCommunity"><view class="row-icon glyph-pin"></view><view class="row-title">加入的小区</view><view class="row-value">{{communityBusy ? '处理中…' : communityName}}</view><view class="row-tail">›</view></view>
+      </view>
+    </view>
+
+    <view class="settings-group">
+      <view class="group-title">消息通知</view>
+      <view class="settings-list">
+        <view class="settings-row"><view class="row-icon glyph-bell"></view><view class="row-title">消息推送</view><switch color="#FF8290" checked="{{settings.pushNotifications}}" disabled="{{busyKey === 'pushNotifications'}}" data-key="pushNotifications" bindchange="toggleSetting" /></view>
+        <view class="settings-row"><view class="row-icon glyph-chat"></view><view class="row-title">私聊通知</view><switch color="#FF8290" checked="{{settings.privateMessages}}" disabled="{{busyKey === 'privateMessages'}}" data-key="privateMessages" bindchange="toggleSetting" /></view>
+        <view class="settings-row"><view class="row-icon glyph-heart">♡</view><view class="row-title">点赞与评论</view><switch color="#FF8290" checked="{{settings.interactionNotifications}}" disabled="{{busyKey === 'interactionNotifications'}}" data-key="interactionNotifications" bindchange="toggleSetting" /></view>
+        <view class="settings-row"><view class="row-icon glyph-megaphone"></view><view class="row-title">小区公告通知</view><switch color="#FF8290" checked="{{settings.communityNotices}}" disabled="{{busyKey === 'communityNotices'}}" data-key="communityNotices" bindchange="toggleSetting" /></view>
+      </view>
+      <view class="group-note">通知偏好保存在账号中；服务通知还需获得微信授权。</view>
+    </view>
+
+    <view class="settings-group">
+      <view class="group-title">隐私设置</view>
+      <view class="settings-list">
+        <view class="settings-row"><view class="row-icon glyph-eye"></view><view class="row-title">允许邻居查看我的主页</view><switch color="#FF8290" checked="{{settings.allowProfileViews}}" disabled="{{busyKey === 'allowProfileViews'}}" data-key="allowProfileViews" bindchange="toggleSetting" /></view>
+        <view class="settings-row"><view class="row-icon glyph-pin"></view><view class="row-title">展示小区位置</view><switch color="#FF8290" checked="{{settings.showLocation}}" disabled="{{busyKey === 'showLocation'}}" data-key="showLocation" bindchange="toggleSetting" /></view>
+      </view>
+      <view class="group-note">主页与小区位置偏好会影响公开资料。</view>
+    </view>
+
+    <view class="settings-group">
+      <view class="group-title">通用</view>
+      <view class="settings-list">
+        <view class="settings-row" hover-class="row-pressed" bindtap="chooseTheme"><view class="row-icon glyph-theme"></view><view class="row-title">深色模式</view><view class="row-value">{{themeLabel}}</view><view class="row-tail">›</view></view>
+        <view class="settings-row" hover-class="row-pressed" bindtap="clearCache"><view class="row-icon glyph-cache"></view><view class="row-title">清除缓存</view><view class="row-value">{{cacheBusy ? '清理中…' : cacheSizeText}}</view><view class="row-tail">›</view></view>
+        <view class="settings-row" hover-class="row-pressed" bindtap="checkUpdate"><view class="row-icon glyph-update">↻</view><view class="row-title">检查更新</view><view class="row-value">v1.0.2</view><view class="row-tail">›</view></view>
+        <view class="settings-row" hover-class="row-pressed" bindtap="clearHistory"><view class="row-icon glyph-history"></view><view class="row-title">清空浏览记录</view><view class="row-value">{{recentCount}} 条</view><view class="row-tail">›</view></view>
+      </view>
+    </view>
+
+    <view class="settings-group">
+      <view class="group-title">帮助与法律</view>
+      <view class="settings-list">
+        <view class="settings-row" hover-class="row-pressed" data-kind="help" bindtap="showDocument"><view class="row-icon glyph-help">?</view><view class="row-title">帮助中心</view><view class="row-tail">›</view></view>
+        <view class="settings-row" hover-class="row-pressed" data-kind="terms" bindtap="showDocument"><view class="row-icon glyph-document">文</view><view class="row-title">用户协议</view><view class="row-tail">›</view></view>
+        <view class="settings-row" hover-class="row-pressed" data-kind="privacy" bindtap="showDocument"><view class="row-icon glyph-shield"></view><view class="row-title">隐私政策</view><view class="row-tail">›</view></view>
+        <view class="settings-action-shell">
+          <view class="settings-row settings-action-visual"><view class="row-icon glyph-service">联</view><view class="row-title">联系客服</view><view class="row-tail">›</view></view>
+          <button class="settings-action-trigger" open-type="contact" hover-class="action-row-hover"></button>
+        </view>
+      </view>
+    </view>
+
+    <button class="logout-button" hover-class="logout-pressed" bindtap="logout">退出登录</button>
+    <view class="footer-brand">睦淘 © {{year}}</view>
+  </block>
+</view>
+<view wx:if="{{editingPhone}}" class="phone-modal-mask" bindtap="cancelPhoneEdit" catchtouchmove="stopModalTap">
+  <view class="phone-modal" catchtap="stopModalTap">
+    <view class="phone-modal-title">{{profile.phone ? '修改手机号' : '绑定手机号'}}</view>
+    <view class="phone-modal-note">请输入11位手机号，保存后将脱敏显示</view>
+    <input class="phone-input" type="number" maxlength="11" value="{{phoneDraft}}" placeholder="请输入手机号" focus="{{editingPhone}}" cursor-spacing="30" bindinput="inputPhone" />
+    <view class="phone-modal-actions"><view class="phone-cancel" hover-class="row-pressed" bindtap="cancelPhoneEdit">取消</view><button class="phone-save" disabled="{{phoneBusy}}" bindtap="savePhone">{{phoneBusy ? '保存中…' : '保存'}}</button></view>
+  </view>
+</view>
 </view>

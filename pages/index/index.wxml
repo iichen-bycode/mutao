@@ -1,38 +1,81 @@
-<view class="page feed-page page-enter">
-  <view class="hero">
-    <view class="brand-row"><view class="brand-mark">睦</view><view><view class="brand">睦淘</view><view class="sub">让好物在社区里继续流转</view></view></view>
-    <view class="community-switch card" hover-class="pressed" hover-stay-time="100" bindtap="openCommunity">
-      <view class="location-mark"><view class="pin-glyph"></view></view>
-      <text class="community-name">{{selection && selection.mode === 'selected' && selection.location ? (selection.location.name || selection.location.address) : '浏览全部小区'}}</text>
-      <text class="chevron">⌄</text>
-    </view>
-    <view class="search-wrap"><view class="search-icon"></view><input placeholder="搜附近的好物" value="{{keyword}}" confirm-type="search" bindinput="onSearchInput" bindconfirm="onSearchConfirm" /><text wx:if="{{keyword}}" class="search-clear" hover-class="pressed" bindtap="clearSearch">×</text></view>
+<view class="page tab-page home-page page-enter">
+  <view class="home-header">
+    <view class="header-copy"><view class="greeting">{{greeting}}<view class="sun-mark"></view></view><view class="home-title">看看闲置好物</view></view>
+    <view class="notice-button" hover-class="pressed" bindtap="goMessages"><view class="bell-glyph"></view><view class="notice-dot"></view></view>
   </view>
 
-  <scroll-view scroll-x class="category-scroll" show-scrollbar="false">
-    <view class="category-row">
-      <view class="category-chip {{categoryId === '' ? 'active' : ''}}" data-id="" hover-class="chip-pressed" bindtap="selectCategory">全部</view>
-      <view wx:for="{{categories}}" wx:key="id" class="category-chip {{categoryId == item.id ? 'active' : ''}}" data-id="{{item.id}}" hover-class="chip-pressed" bindtap="selectCategory">{{item.name}}</view>
+  <view class="search-row">
+    <view class="search-wrap"><view class="search-icon"></view><input placeholder="搜索闲置和小区…" value="{{keyword}}" confirm-type="search" bindinput="onSearchInput" bindconfirm="onSearchConfirm" /><text wx:if="{{keyword}}" class="search-clear" hover-class="pressed" bindtap="clearSearch">×</text></view>
+  </view>
+
+  <scroll-view scroll-x class="category-scroll" show-scrollbar="false"><view class="category-row">
+    <view class="category-chip {{categoryId === '' ? 'active' : ''}}" data-id="" hover-class="chip-pressed" bindtap="selectCategory">全部</view>
+    <view wx:for="{{categories}}" wx:key="id" class="category-chip {{categoryId == item.id ? 'active' : ''}}" data-id="{{item.id}}" hover-class="chip-pressed" bindtap="selectCategory">{{item.name}}</view>
+  </view></scroll-view>
+
+  <view class="section-head nearby-section-head">
+    <view class="nearby-title-row">
+      <view class="section-title"><view class="hot-mark"></view>附近闲置</view>
+      <view class="community-button" hover-class="pressed" hover-stay-time="100" bindtap="chooseCommunity">
+        <view class="pin-glyph community-pin"></view>
+        <text class="community-name">{{selectingCommunity ? '定位中' : communityName}}</text>
+        <view class="scope-arrow-button"><view class="scope-arrow"></view></view>
+        <text wx:if="{{selection && selection.mode === 'selected'}}" class="scope-reset" catchtap="clearCommunity">×</text>
+      </view>
     </view>
-  </scroll-view>
+    <!-- <view class="section-meta-row"><view class="section-hint">{{selection && selection.mode === 'selected' ? communityName : '看看附近有什么好物'}}</view><text class="section-count">{{total}} 件</text></view> -->
+  </view>
 
-  <view class="section-head"><view><view class="section-title">社区好物</view><view class="section-hint">{{selection && selection.mode === 'selected' && selection.location ? selection.location.name || selection.location.address : '邻里正在分享的闲置'}}</view></view><text class="section-count">{{total}} 件</text></view>
-
-  <view wx:if="{{items.length}}" class="listing-grid">
-    <view wx:for="{{items}}" wx:key="id" class="listing-card" data-id="{{item.id}}" hover-class="listing-pressed" hover-stay-time="100" bindtap="openDetail">
-      <view class="image-wrap"><image wx:if="{{item.images.length && !item.imageError}}" class="listing-image" src="{{item.images[0]}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onImageError" /><view wx:else class="image-placeholder"><text class="placeholder-mark">邻</text><text>待你发现</text></view><view wx:if="{{item.status === 'sold'}}" class="sold-overlay">已售出</view></view>
-      <view class="listing-info"><view class="listing-price"><text class="yuan">¥</text>{{item.price}}</view><view class="listing-title">{{item.title}}</view><view class="listing-meta"><text class="community-meta">{{item.community_name || '邻里好物'}}</text><text wx:if="{{item.timeLabel}}" class="meta-dot">·</text><text wx:if="{{item.timeLabel}}">{{item.timeLabel}}</text></view><view wx:if="{{item.category_name}}" class="listing-category">{{item.category_name}}</view></view>
+  <view wx:if="{{nearbyItems.length}}" class="listing-grid">
+    <view wx:for="{{nearbyItems}}" wx:key="id" class="listing-card" data-id="{{item.id}}" hover-class="listing-pressed" hover-stay-time="100" bindtap="openDetail" style="animation-delay: {{index * 45}}ms">
+      <view class="image-wrap"><image wx:if="{{item.images.length && !item.imageError}}" class="listing-image" src="{{item.images[0]}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onImageError" /><view wx:else class="image-placeholder"><text class="placeholder-mark">邻</text></view><view wx:if="{{item.status === 'sold'}}" class="sold-overlay">已售出</view></view>
+      <view class="listing-info"><view class="listing-price"><text class="yuan">¥</text>{{item.price}}</view><view class="listing-title">{{item.title}}</view><view class="listing-meta"><text class="community-meta">{{item.community_name || '邻里好物'}}</text><text wx:if="{{item.timeLabel}}" class="meta-dot">·</text><text wx:if="{{item.timeLabel}}">{{item.timeLabel}}</text></view></view>
     </view>
   </view>
 
-  <view wx:if="{{loading && !items.length}}" class="listing-grid skeleton-grid" aria-hidden="true">
-    <view class="skeleton-listing card"><view class="skeleton-block skeleton-image"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line price-line"></view></view></view>
-    <view class="skeleton-listing card"><view class="skeleton-block skeleton-image"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line price-line"></view></view></view>
-    <view class="skeleton-listing card"><view class="skeleton-block skeleton-image"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line price-line"></view></view></view>
-    <view class="skeleton-listing card"><view class="skeleton-block skeleton-image"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line price-line"></view></view></view>
+  <view wx:if="{{recommendedItems.length}}" class="section-head recommendation-heading"><view><view class="section-title"><view class="recommend-mark">♡</view>为你推荐邻居好物</view></view></view>
+  <view wx:if="{{recommendedItems.length}}" class="recommendation-list">
+    <view wx:for="{{recommendedItems}}" wx:key="id" class="recommendation-card card" data-id="{{item.id}}" hover-class="listing-pressed" hover-stay-time="100" bindtap="openDetail" style="animation-delay: {{index * 60}}ms">
+      <view class="recommend-stripe"></view><image wx:if="{{item.images.length && !item.imageError}}" class="recommend-image" src="{{item.images[0]}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onImageError" /><view wx:else class="recommend-image recommend-placeholder">邻</view>
+      <view class="recommend-copy"><view class="recommend-price">¥{{item.price}}</view><view class="recommend-title">{{item.title}}</view><view class="recommend-meta">{{item.community_name || '邻里好物'}}<text wx:if="{{item.timeLabel}}"> · {{item.timeLabel}}</text></view></view><view wx:if="{{item.status === 'sold'}}" class="recommend-status">已售出</view>
+    </view>
+  </view>
+
+  <view wx:if="{{moreItems.length}}" class="listing-grid more-grid">
+    <view wx:for="{{moreItems}}" wx:key="id" class="listing-card" data-id="{{item.id}}" hover-class="listing-pressed" hover-stay-time="100" bindtap="openDetail">
+      <view class="image-wrap"><image wx:if="{{item.images.length && !item.imageError}}" class="listing-image" src="{{item.images[0]}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onImageError" /><view wx:else class="image-placeholder"><text class="placeholder-mark">邻</text></view><view wx:if="{{item.status === 'sold'}}" class="sold-overlay">已售出</view></view>
+      <view class="listing-info"><view class="listing-price"><text class="yuan">¥</text>{{item.price}}</view><view class="listing-title">{{item.title}}</view><view class="listing-meta"><text class="community-meta">{{item.community_name || '邻里好物'}}</text><text wx:if="{{item.timeLabel}}" class="meta-dot">·</text><text wx:if="{{item.timeLabel}}">{{item.timeLabel}}</text></view></view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading && !items.length}}" class="home-skeleton">
+    <view class="listing-grid skeleton-grid"><view wx:for="{{[1,2,3,4]}}" wx:key="*this" class="skeleton-listing card"><view class="skeleton-block skeleton-image"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line price-line"></view></view></view></view>
+    <view class="skeleton-recommend"><view class="skeleton-block skeleton-recommend-row"></view><view class="skeleton-block skeleton-recommend-row"></view></view>
   </view>
   <view wx:elif="{{error && !items.length}}" class="state-panel card"><view class="state-title">暂时没有连上集市</view><view class="state-copy">检查网络后再试一次</view><button class="primary state-action" hover-class="pressed" bindtap="refreshFeed">重新加载</button></view>
-  <view wx:elif="{{!items.length}}" class="state-panel card"><view class="empty-mark">闲</view><view class="state-title">{{keyword || categoryId ? '没有找到相关好物' : '这里还没有闲置好物'}}</view><view class="state-copy">{{keyword || categoryId ? '试试其他关键词或分类' : '发布一件，让邻居先看到'}}</view><button wx:if="{{keyword || categoryId}}" class="secondary state-action" hover-class="pressed" bindtap="clearFilters">清除筛选</button><button wx:else class="primary state-action" hover-class="pressed" bindtap="goPublish">发布闲置</button></view>
+  <view wx:elif="{{!items.length && !loading && (keyword || categoryId)}}" class="filter-empty">
+    <view class="filter-empty-icon"><view class="filter-lens"></view></view>
+    <view class="state-title">没有搜到相关好物</view>
+    <view class="state-copy">换个关键词或分类再找找</view>
+    <button class="secondary state-action" hover-class="pressed" bindtap="clearFilters">清除筛选</button>
+  </view>
+  <view wx:elif="{{!items.length && !loading}}" class="market-empty">
+    <view class="empty-scene">
+      <view class="scene-sun"></view>
+      <view class="scene-spark spark-one"></view><view class="scene-spark spark-two"></view>
+      <view class="empty-store">
+        <view class="empty-sign">邻</view>
+        <view class="empty-awning"></view>
+        <view class="empty-window"><view class="empty-package"><view class="package-cross"></view></view></view>
+        <view class="empty-door"></view>
+      </view>
+      <view class="scene-ground"></view>
+    </view>
+    <view class="empty-eyebrow">邻里集市 · 正在等你</view>
+    <view class="state-title">等你摆上第一件好物</view>
+    <view class="state-copy">发布后，附近邻居就能在这里发现它</view>
+    <button class="primary state-action market-action" hover-class="pressed" bindtap="goPublish">发布第一件闲置</button>
+  </view>
   <view wx:if="{{items.length && loading}}" class="load-state">正在加载更多…</view>
   <view wx:elif="{{items.length && error}}" class="load-state retry-state" hover-class="pressed" bindtap="loadMore">{{error}}，点此重试</view>
   <view wx:elif="{{items.length && !hasMore}}" class="load-state muted">已经看到最后啦</view>

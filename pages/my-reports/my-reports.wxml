@@ -1,0 +1,15 @@
+<view class="page records-page page-enter">
+  <view class="page-title">我的举报</view>
+  <view class="page-intro">你提交的内容会由社区运营人员核查。</view>
+  <view wx:if="{{items.length}}" class="record-list">
+    <view wx:for="{{items}}" wx:key="id" class="record-card card" data-id="{{item.listing_id}}" hover-class="pressed" bindtap="openListing">
+      <view class="record-head"><view class="record-title">{{item.listing_id ? item.listing_title : '用户主页 · ' + item.reported_user_nickname}}</view><view class="report-status status-{{item.status === 'resolved' ? 'published' : item.status === 'dismissed' ? 'rejected' : 'pending'}}">{{item.statusLabel}}</view></view>
+      <view class="record-community">{{item.community_name || '邻里好物'}}<text wx:if="{{item.timeLabel}}"> · {{item.timeLabel}}</text></view>
+      <view class="record-reason">{{item.reason}}</view>
+      <view wx:if="{{item.listing_id}}" class="record-link">查看被举报信息 <text>›</text></view>
+    </view>
+  </view>
+  <view wx:elif="{{loading}}" class="record-list"><view class="record-card card skeleton-record"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line"></view></view><view class="record-card card skeleton-record"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line"></view></view></view>
+  <view wx:elif="{{error}}" class="state-panel card"><view class="state-title">举报记录暂时无法加载</view><view class="state-copy">检查网络连接后再试</view><button class="primary state-action" bindtap="retry">重新加载</button></view>
+  <view wx:else class="state-panel card"><view class="state-mark">报</view><view class="state-title">还没有提交过举报</view><view class="state-copy">遇到不合适的闲置信息时，可以在详情页提交举报</view><button class="primary state-action" bindtap="goBrowse">去社区看看</button></view>
+</view>

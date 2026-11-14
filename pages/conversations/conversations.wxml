@@ -1,23 +1,58 @@
-<view class="page conversations-page page-enter">
-  <view class="page-heading"><view class="page-eyebrow">睦淘社区 · 对话</view><view class="heading-row"><view class="page-title">邻里消息</view><text wx:if="{{items.length}}" class="message-count">{{items.length}} 段对话</text></view><view class="page-subtitle">关于好物的交流，都在这里继续</view></view>
+<view class="page tab-page inbox-page page-enter">
+  <view class="inbox-header" style="padding-top: {{statusBarHeight}}px"><view class="inbox-title">消息</view></view>
+  <view class="inbox-toolbar">
+    <view class="filter-list">
+      <view wx:for="{{filters}}" wx:key="key" class="filter-chip {{activeFilter === item.key ? 'filter-active' : ''}}" data-filter="{{item.key}}" hover-class="filter-pressed" bindtap="selectFilter">{{item.label}}</view>
+    </view>
+    <view wx:if="{{unreadNotifications > 0 && activeFilter !== 'private'}}" class="read-all {{markingAll ? 'read-all-disabled' : ''}}" hover-class="read-all-pressed" bindtap="markAllRead">{{markingAll ? '处理中' : '通知已读'}}</view>
+  </view>
 
-  <view wx:if="{{items.length}}" class="conversation-list">
-    <view wx:for="{{items}}" wx:key="id" class="conversation card" data-id="{{item.id}}" hover-class="conversation-pressed" hover-stay-time="100" bindtap="openChat">
-      <image wx:if="{{item.other_avatar}}" class="avatar" src="{{item.other_avatar}}" mode="aspectFill" />
-      <view wx:else class="avatar avatar-fallback">{{item.avatarInitial}}</view>
-      <view class="conversation-main">
-        <view class="top-row"><view class="name">{{item.other_nickname || '邻居'}}</view><text wx:if="{{item.timeLabel}}" class="muted time">{{item.timeLabel}}</text></view>
-        <view class="product">聊聊：{{item.listing_title || '邻里好物'}}</view>
-        <view class="bottom-row"><view class="last-message">{{item.last_message || '可以聊聊这件好物'}}</view><text class="arrow">›</text></view>
+  <view wx:if="{{visibleItems.length && !loading && !error}}" class="inbox-card">
+    <view wx:for="{{visibleItems}}" wx:key="key" class="inbox-row {{index === visibleItems.length - 1 ? 'row-last' : ''}}" data-id="{{item.id}}" data-type="{{item.type}}" hover-class="message-pressed" hover-stay-time="100" bindtap="openItem">
+      <view wx:if="{{item.type === 'private'}}">
+        <image wx:if="{{item.other_avatar}}" class="avatar" src="{{item.other_avatar}}" mode="aspectFill" />
+        <view wx:else class="avatar avatar-fallback avatar-tone-{{item.avatarTone}}">{{item.avatarInitial}}</view>
+      </view>
+      <view wx:else class="avatar system-avatar"><view class="bell-icon"></view></view>
+
+      <view class="row-copy">
+        <view class="row-title-line">
+          <view class="row-title">{{item.title}}</view>
+          <text class="type-tag {{item.type === 'private' ? 'private-tag' : 'system-tag'}}">{{item.type === 'private' ? '私聊' : '通知'}}</text>
+        </view>
+        <view wx:if="{{item.type === 'private' && item.listing_title && !item.last_message}}" class="row-preview">聊聊：{{item.listing_title}}</view>
+        <view wx:else class="row-preview">{{item.preview}}</view>
+      </view>
+
+      <view class="row-meta">
+        <text class="row-time">{{item.timeLabel}}</text>
+        <text wx:if="{{item.type === 'private' && item.unreadCount > 0}}" class="unread-badge">{{item.unreadCount > 99 ? '99+' : item.unreadCount}}</text>
+        <view wx:elif="{{item.type === 'system' && item.unread}}" class="unread-dot"></view>
       </view>
     </view>
   </view>
 
-  <view wx:elif="{{loading}}" class="conversation-list skeleton-conversations" aria-hidden="true">
-    <view class="conversation card skeleton-conversation"><view class="skeleton-block skeleton-avatar"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line"></view></view></view>
-    <view class="conversation card skeleton-conversation"><view class="skeleton-block skeleton-avatar"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line"></view></view></view>
-    <view class="conversation card skeleton-conversation"><view class="skeleton-block skeleton-avatar"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line"></view></view></view>
+  <view wx:elif="{{loading}}" class="inbox-card inbox-skeleton" aria-hidden="true">
+    <view wx:for="{{skeletonRows}}" wx:key="*this" class="skeleton-row"><view class="skeleton-block skeleton-avatar"></view><view class="skeleton-copy"><view class="skeleton-line skeleton-title"></view><view class="skeleton-line skeleton-preview"></view></view><view class="skeleton-line skeleton-time"></view></view>
   </view>
-  <view wx:elif="{{error}}" class="state-panel card"><view class="state-icon error-icon">!</view><view class="state-title">消息暂时无法加载</view><view class="state-copy">检查网络连接后再试一次</view><button class="primary state-action" hover-class="pressed" bindtap="retry">重新加载</button></view>
-  <view wx:else class="state-panel card"><view class="state-icon">聊</view><view class="state-title">还没有聊天</view><view class="state-copy">打开一件好物，点“聊一聊”开始和邻居沟通</view></view>
+
+  <view wx:elif="{{loggedOut}}" class="state-panel card">
+    <view class="state-mark">登</view>
+    <view class="state-title">登录后查看消息</view>
+    <view class="state-copy">重新登录即可继续查看私聊和系统通知</view>
+    <button class="primary state-action" hover-class="pressed" bindtap="login">重新登录</button>
+  </view>
+
+  <view wx:elif="{{error}}" class="state-panel card">
+    <view class="state-mark error-mark">!</view>
+    <view class="state-title">消息暂时无法加载</view>
+    <view class="state-copy">检查网络连接后再试一次</view>
+    <button class="primary state-action" hover-class="pressed" bindtap="retry">重新加载</button>
+  </view>
+
+  <view wx:else class="state-panel card empty-panel">
+    <view class="state-mark">{{activeFilter === 'system' ? '知' : activeFilter === 'private' ? '聊' : '消'}}</view>
+    <view class="state-title">{{activeFilter === 'private' ? '还没有私聊消息' : activeFilter === 'system' ? '暂时没有系统通知' : '还没有消息'}}</view>
+    <view class="state-copy">{{activeFilter === 'private' ? '打开一件邻里好物，和发布者聊一聊' : activeFilter === 'system' ? '审核进度和重要提醒会显示在这里' : '邻里交流和重要提醒会显示在这里'}}</view>
+  </view>
 </view>

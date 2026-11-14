@@ -1,15 +1,13 @@
-<view class="page publish-page page-enter">
+<view class="page tab-page publish-page page-enter">
   <view class="publish-intro">
-    <view class="publish-heading-row"><view><view class="eyebrow"><view class="eyebrow-dot"></view>睦淘 · 便捷发布</view><view class="page-title">让好物继续被需要</view></view><view class="draft-tools"><text wx:if="{{hasDraft}}" class="draft-saved">{{draftSavedAt}}</text><button class="draft-button" hover-class="pressed" bindtap="saveDraft">存草稿</button></view></view>
+    <view class="publish-heading-row"><view><view class="eyebrow"><view class="eyebrow-dot"></view>睦淘 · 闲置发布</view><view class="page-title">让好物继续被需要</view></view></view>
     <view class="page-subtitle">信息越清楚，邻居越容易找到它</view>
   </view>
 
-  <view id="community-field" class="community-pick card" hover-class="pressed" bindtap="openCommunity">
+  <view id="community-field" class="community-pick card {{selection && selection.mode === 'selected' ? 'community-selected' : ''}}" hover-class="pressed" bindtap="openCommunity">
     <view class="location-symbol"><view class="pin-glyph"></view></view>
     <view class="community-copy">
-      <view class="field-label">物品归属小区 <text class="required-mark">必填</text></view>
-      <view class="community-value">{{selectingCommunity ? '正在打开地图…' : selection && selection.mode === 'selected' && selection.location ? (selection.location.name || selection.location.address) : '选择发布小区'}}</view>
-      <view class="field-help">仅在你点选后打开地图，不会自动定位</view>
+      <view class="community-value">{{selectingCommunity ? '正在打开地图…' : selection && selection.mode === 'selected' && selection.location ? (selection.location.name || selection.location.address) : '选择发布小区'}}<text class="required-mark">(必填)</text></view>
       <view wx:if="{{fieldErrors.community}}" class="field-error">{{fieldErrors.community}}</view>
     </view>
     <view class="chevron">›</view>
@@ -18,13 +16,13 @@
   <view class="form-section card">
     <view class="section-heading"><view class="section-number">02</view><view><view class="section-title">物品信息</view><view class="section-caption">让邻居快速了解这件好物</view></view></view>
     <view id="title-field" class="field-block">
-      <view class="field-head"><label class="field-label" for="publish-title">标题 <text class="required-mark">必填</text></label><text class="counter">{{titleCount}}/120</text></view>
+      <view class="field-head"><label class="field-label" for="publish-title">标题 <text class="required-mark">(必填)</text></label><text class="counter">{{titleCount}}/120</text></view>
       <input id="publish-title" class="form-input" placeholder="例如：九成新的儿童自行车" maxlength="120" value="{{title}}" data-field="title" bindinput="input" bindblur="validateField" />
       <view class="field-help">写上品牌、用途或主要特点</view>
       <view wx:if="{{fieldErrors.title}}" class="field-error">{{fieldErrors.title}}</view>
     </view>
     <view id="description-field" class="field-block description-block">
-      <view class="field-head"><label class="field-label" for="publish-description">物品描述 <text class="required-mark">必填</text></label><text class="counter">{{descriptionCount}}/3000</text></view>
+      <view class="field-head"><label class="field-label" for="publish-description">物品描述 <text class="required-mark">(必填)</text></label><text class="counter">{{descriptionCount}}/3000</text></view>
       <textarea id="publish-description" class="form-textarea" placeholder="介绍新旧程度、使用情况和方便的交易时间…" maxlength="3000" value="{{description}}" data-field="description" bindinput="input" bindblur="validateField" />
       <view class="field-help">清楚说明细节，可以减少来回确认</view>
       <view wx:if="{{fieldErrors.description}}" class="field-error">{{fieldErrors.description}}</view>
@@ -32,15 +30,15 @@
   </view>
 
   <view class="form-section card">
-    <view class="section-heading"><view class="section-number">03</view><view><view class="section-title">商品图片</view><view class="section-caption">第一张图片会作为封面</view></view><text class="photo-count">{{photos.length}} / 9</text></view>
+    <view class="section-heading"><view class="section-number">03</view><view><view class="section-title">商品图片</view><view class="section-caption">第一张图片会作为封面，至少上传一张</view></view><text class="photo-count">{{photos.length}} / {{maxImages}}</text></view>
     <view class="photo-grid">
       <view wx:for="{{photos}}" wx:key="key" class="photo-wrap" data-index="{{index}}" bindtap="previewPhoto">
         <image src="{{item.localPath}}" mode="aspectFill" aria-label="商品图片，点击预览" />
         <view class="photo-index">{{index === 0 ? '封面' : index + 1}}</view>
-        <view class="remove" data-index="{{index}}" catchtap="removeImage" aria-label="删除图片">×</view>
+        <view class="remove {{deletingPhotos ? 'remove-disabled' : ''}}" data-index="{{index}}" catchtap="removeImage" aria-label="删除图片">×</view>
       </view>
-      <view wx:if="{{photos.length < 9}}" class="add-photo" hover-class="pressed" bindtap="pickImages" aria-label="添加商品图片">
-        <view class="add-symbol">＋</view><view>{{uploading ? '上传中…' : '添加图片'}}</view><view class="add-limit">最多 9 张</view>
+      <view wx:if="{{photos.length < maxImages}}" class="add-photo" hover-class="pressed" bindtap="pickImages" aria-label="添加商品图片">
+        <view class="add-symbol">＋</view><view>{{uploading ? '上传中…' : '添加图片'}}</view><view class="add-limit">最多 {{maxImages}} 张</view>
       </view>
     </view>
     <view wx:if="{{uploading}}" class="uploading-note"><view class="mini-spinner"></view>{{uploadProgress}}</view>
@@ -50,38 +48,51 @@
   <view class="form-section card details-section">
     <view class="section-heading"><view class="section-number">04</view><view><view class="section-title">价格与分类</view><view class="section-caption">方便邻居筛选和比较</view></view></view>
     <view id="price-field" class="detail-row">
-      <label class="field-label" for="publish-price">转让价格 <text class="required-mark">必填</text></label>
+      <label class="field-label" for="publish-price">转让价格 <text class="required-mark">(必填)</text></label>
       <view class="price-control"><text class="price-symbol">¥</text><input id="publish-price" type="digit" maxlength="11" placeholder="0.00" value="{{price}}" data-field="price" bindinput="input" bindblur="validateField" /></view>
     </view>
     <view wx:if="{{fieldErrors.price}}" class="field-error row-error">{{fieldErrors.price}}</view>
+    <view class="detail-row">
+      <label class="field-label" for="publish-original-price">原价 <text class="optional-label">(选填)</text></label>
+      <view class="price-control original-price-control"><text class="price-symbol">¥</text><input id="publish-original-price" class="original-price-input" type="digit" maxlength="11" placeholder="填写后展示折扣" value="{{originalPrice}}" data-field="originalPrice" bindinput="input" bindblur="validateField" /></view>
+    </view>
+    <view wx:if="{{fieldErrors.originalPrice}}" class="field-error row-error">{{fieldErrors.originalPrice}}</view>
     <view id="category-field" class="detail-row">
-      <view class="field-label">物品分类 <text class="required-mark">必填</text></view>
+      <view class="field-label">物品分类 <text class="required-mark">(必填)</text></view>
       <picker aria-label="物品分类" range="{{categories}}" range-key="name" disabled="{{!categories.length || categoryLoading}}" bindchange="selectCategory">
-        <view class="picker-value {{categoryLabel ? 'picker-selected' : ''}}"><view wx:if="{{categoryLoading}}" class="category-skeleton-line skeleton-line"></view><text wx:else>{{categoryLabel || (categoryError ? '分类加载失败' : categories.length ? '选择分类' : '暂无可选分类')}}</text><text class="chevron">›</text></view>
+        <view class="picker-value {{categoryLabel ? 'picker-selected' : ''}}"><view wx:if="{{categoryLoading}}" class="category-skeleton-line skeleton-line"></view><text wx:else>{{categoryLabel || (categoryError ? '闲置' : categories.length ? '选择分类' : '暂无可选分类')}}</text><text class="chevron">›</text></view>
       </picker>
     </view>
     <view wx:if="{{categoryError}}" class="category-retry" hover-class="pressed" bindtap="loadCategories">点此重新加载分类</view>
     <view wx:if="{{fieldErrors.category}}" class="field-error row-error">{{fieldErrors.category}}</view>
     <view class="detail-row condition-row">
-      <label class="field-label" for="publish-condition">物品成色 <text class="optional-label">选填</text></label>
+      <label class="field-label" for="publish-condition">物品成色 <text class="optional-label">(选填)</text></label>
       <input id="publish-condition" class="condition-input" placeholder="例如：九成新" maxlength="40" value="{{conditionLabel}}" data-field="conditionLabel" bindinput="input" />
+    </view>
+    <view class="delivery-row">
+      <view class="field-label">交接方式</view>
+      <view class="delivery-options">
+        <view class="delivery-option {{deliveryType === 'pickup' ? 'selected' : ''}}" data-type="pickup" hover-class="pressed" bindtap="selectDelivery">小区自提</view>
+        <view class="delivery-option {{deliveryType === 'delivery' ? 'selected' : ''}}" data-type="delivery" hover-class="pressed" bindtap="selectDelivery">同城配送</view>
+        <view class="delivery-option {{deliveryType === 'discuss' ? 'selected' : ''}}" data-type="discuss" hover-class="pressed" bindtap="selectDelivery">协商交接</view>
+      </view>
     </view>
   </view>
 
   <view class="form-section card contact-section">
     <view class="section-heading"><view class="section-number">05</view><view><view class="section-title">联系与交易</view><view class="section-caption">公开联系方式由你决定</view></view></view>
-    <view class="field-label">公开联系方式 <text class="optional-label">选填</text></view>
+    <view class="field-label">公开联系方式 <text class="optional-label">(选填)</text></view>
     <view class="field-help contact-help">填写后，所有浏览这条信息的人都能看到</view>
     <radio-group class="contact-options" bindchange="selectContact">
       <label class="contact-option"><radio value="none" checked="{{contactType === 'none'}}" color="#FF8FA3" />不公开</label>
       <label class="contact-option"><radio value="phone" checked="{{contactType === 'phone'}}" color="#FF8FA3" />手机号</label>
       <label class="contact-option"><radio value="wechat" checked="{{contactType === 'wechat'}}" color="#FF8FA3" />微信号</label>
     </radio-group>
-    <label wx:if="{{contactType !== 'none'}}" class="contact-input-label" for="publish-contact">{{contactType === 'phone' ? '联系电话' : '微信号'}} <text class="required-mark">必填</text></label>
+    <label wx:if="{{contactType !== 'none'}}" class="contact-input-label" for="publish-contact">{{contactType === 'phone' ? '联系电话' : '微信号'}} <text class="required-mark">(必填)</text></label>
     <input wx:if="{{contactType !== 'none'}}" id="publish-contact" class="contact-input" type="text" placeholder="{{contactType === 'phone' ? '填写联系电话' : '填写微信号'}}" value="{{contactValue}}" data-field="contactValue" bindinput="input" bindblur="validateField" />
     <view wx:if="{{fieldErrors.contactValue}}" class="field-error">{{fieldErrors.contactValue}}</view>
   </view>
 
-  <view class="review-note"><view class="review-icon">i</view><text>提交后会进入平台审核。审核通过后，这件好物就会出现在小区信息流中。</text></view>
-  <button class="primary submit-button" hover-class="pressed" loading="{{submitting}}" disabled="{{submitting || uploading}}" bindtap="submit">{{submitting ? '正在提交…' : '提交审核'}}</button>
+  <view class="review-note"><view class="review-icon">i</view><text>提交后会进入平台审核，通过后仅作为物品信息显示在首页和社区好物流中。</text></view>
+  <button class="primary submit-button" hover-class="pressed" loading="{{submitting}}" disabled="{{submitting || uploading || deletingPhotos}}" bindtap="submit">{{submitting ? '正在提交…' : '提交发布'}}</button>
 </view>

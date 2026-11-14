@@ -1,7 +1,11 @@
 const config = require('./config');
 const { request } = require('./request');
 
-async function ensureLogin() {
+const SIGNED_OUT_KEY = 'authSignedOut';
+
+async function ensureLogin(options = {}) {
+  if (options.force) wx.removeStorageSync(SIGNED_OUT_KEY);
+  else if (wx.getStorageSync(SIGNED_OUT_KEY)) return null;
   let token = wx.getStorageSync('sessionToken');
   if (token) return token;
   let code;
@@ -16,4 +20,15 @@ async function ensureLogin() {
   return result.token;
 }
 
-module.exports = { ensureLogin };
+function signOut() {
+  wx.removeStorageSync('sessionToken');
+  wx.removeStorageSync('profile');
+  wx.removeStorageSync('joinedCommunity');
+  const app = getApp();
+  if (app && app.setJoinedCommunity) app.setJoinedCommunity(null);
+  wx.setStorageSync(SIGNED_OUT_KEY, true);
+}
+
+function isSignedOut() { return Boolean(wx.getStorageSync(SIGNED_OUT_KEY)); }
+
+module.exports = { ensureLogin, signOut, isSignedOut };

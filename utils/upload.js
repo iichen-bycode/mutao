@@ -1,13 +1,15 @@
-const COS = require('cos-wx-sdk-v5');
 const { request } = require('./request');
 
-async function uploadImage(file) {
+async function uploadImage(file, scope = 'listing') {
+  // Load COS only when an upload starts, so a stale or missing NPM bundle cannot
+  // prevent the publish page and the other tab pages from registering.
+  const COS = require('cos-wx-sdk-v5');
   const fileSize = Number(file.size) > 0 ? Number(file.size) : await new Promise((resolve) => wx.getFileInfo({
     filePath: file.tempFilePath,
     success: (result) => resolve(Number(result.size) || 0),
     fail: () => resolve(0)
   }));
-  const credential = await request('/uploads/credentials', { method: 'POST', data: { fileName: file.name || file.tempFilePath.split('/').pop() } });
+  const credential = await request('/uploads/credentials', { method: 'POST', data: { fileName: file.name || file.tempFilePath.split('/').pop(), scope } });
   const credentials = credential.credentials || credential;
   const cos = new COS({
     SecretId: credentials.tmpSecretId || credentials.TmpSecretId,
@@ -29,4 +31,8 @@ async function uploadImage(file) {
   });
 }
 
-module.exports = { uploadImage };
+async function deleteUploadedImage(key) {
+  return request('/uploads/remove', { method: 'POST', data: { key }, silent: true });
+}
+
+module.exports = { uploadImage, deleteUploadedImage };

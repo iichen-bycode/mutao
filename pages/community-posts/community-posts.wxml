@@ -1,0 +1,17 @@
+<view class="page posts-feed page-enter">
+  <view class="posts-hero"><view><view class="eyebrow">睦淘 · 邻里交流</view><view class="page-title">邻里话题</view></view><button class="compose-button" hover-class="pressed" bindtap="goCreate">发帖 <text>+</text></button></view>
+  <view class="scope-pill" hover-class="pressed" bindtap="goChooseCommunity"><view class="pin-glyph"></view><view class="scope-name">{{selectingCommunity ? '打开地图中…' : selection && selection.mode === 'selected' && selection.location ? (selection.location.name || selection.location.address) : '全部社区帖子'}}</view><view class="scope-change">筛选小区 ›</view><view wx:if="{{selection && selection.mode === 'selected'}}" class="scope-change" catchtap="clearCommunity">全部</view></view>
+  <view class="feed-intro">邻居们正在聊这些</view>
+  <view wx:if="{{items.length}}" class="post-list">
+    <view wx:for="{{items}}" wx:key="id" class="post-card card" data-id="{{item.id}}" hover-class="post-pressed" bindtap="openPost" style="animation-delay: {{index * 40}}ms">
+      <view class="post-author"><view class="author-avatar">{{item.authorInitial}}</view><view class="author-main"><view class="author-name">{{item.author_nickname || '邻居'}}</view><view class="author-meta">{{item.community_name || '睦淘社区'}}<text wx:if="{{item.timeLabel}}"> · {{item.timeLabel}}</text></view></view><view class="post-type">{{item.typeLabel}}</view></view>
+      <view class="post-title">{{item.title}}</view><view class="post-copy">{{item.content}}</view>
+      <view wx:if="{{item.images.length}}" class="post-image-row"><image wx:for="{{item.images}}" wx:for-item="image" wx:key="*this" wx:if="{{index < 3}}" src="{{image}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onImageError" /></view>
+      <view class="post-bottom"><view class="comment-mark"><view class="comment-glyph"></view>聊一聊</view><view class="post-arrow">›</view></view>
+    </view>
+  </view>
+  <view wx:elif="{{loading}}" class="post-list" aria-hidden="true"><view class="post-card card skeleton-post"><view class="skeleton-author"><view class="skeleton-avatar"></view><view class="skeleton-lines"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view></view><view class="skeleton-line"></view><view class="skeleton-line"></view></view><view class="post-card card skeleton-post"><view class="skeleton-author"><view class="skeleton-avatar"></view><view class="skeleton-lines"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view></view><view class="skeleton-line"></view><view class="skeleton-line"></view></view></view>
+  <view wx:elif="{{error}}" class="state-panel card"><view class="state-title">话题暂时无法加载</view><view class="state-copy">检查网络后再试一次</view><button class="primary state-action" hover-class="pressed" bindtap="retry">重新加载</button></view>
+  <view wx:else class="state-panel card"><view class="state-mark">聊</view><view class="state-title">这个小区还没有邻里话题</view><view class="state-copy">分享一件小事，开启和邻居的交流</view><button class="primary state-action" hover-class="pressed" bindtap="goCreate">发布第一个帖子</button></view>
+  <view wx:if="{{loadingMore}}" class="loading-more">正在加载更多…</view>
+</view>

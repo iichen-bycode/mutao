@@ -1,57 +1,84 @@
-<view class="page me-page page-enter">
-  <view class="profile-heading"><view class="page-eyebrow">睦淘社区 · 个人中心</view><view class="page-title">我的好物</view></view>
-  <view class="profile-card card" hover-class="pressed" bindtap="goSettings">
+<view class="page tab-page me-page page-enter">
+  <view wx:if="{{loggedOut}}" class="state-panel card"><view class="state-mark">邻</view><view class="state-title">你已退出登录</view><view class="state-copy">登录后可管理发布、消息和个人设置</view><button class="primary state-action" hover-class="pressed" bindtap="login">重新登录</button></view>
+  <block wx:else>
+  <view class="profile-head" hover-class="pressed" bindtap="goSettings">
     <image wx:if="{{profile && profile.avatarUrl}}" class="avatar" src="{{profile.avatarUrl}}" mode="aspectFill" />
     <view wx:else class="avatar avatar-fallback">{{profile && profile.initial ? profile.initial : '邻'}}</view>
-    <view class="profile-info"><view class="name">{{profile ? profile.nickname : '邻居'}}</view><view class="muted">在社区里分享和发现好物</view></view>
-    <view class="member-mark">邻里成员</view>
+    <view class="profile-info">
+      <view class="profile-name">{{profile ? profile.nickname : '邻居'}}</view>
+      <view class="profile-meta">ID：{{profile && profile.publicId ? profile.publicId : '—'}} · {{communityName}}</view>
+      <view class="member-badge"><view class="badge-star"></view>睦淘邻居</view>
+    </view>
+    <view class="edit-link" catchtap="goEditProfile">编辑</view>
   </view>
 
   <view class="stat-row">
-    <view class="stat card" data-mode="listings" hover-class="pressed" bindtap="switchMode"><view class="stat-value">{{listings.length}}</view><view class="stat-label">我的发布</view></view>
-    <view class="stat card" data-mode="favorites" hover-class="pressed" bindtap="switchMode"><view class="stat-value">{{mode === 'favorites' ? listings.length : '♡'}}</view><view class="stat-label">我的收藏</view></view>
-    <view class="stat card" hover-class="pressed" bindtap="goHistory"><view class="stat-value">{{recent.length}}</view><view class="stat-label">最近浏览</view></view>
+    <view class="stat" data-mode="listings" hover-class="pressed" bindtap="switchMode"><view class="stat-value">{{counts.listings}}</view><view class="stat-label">我的闲置</view></view>
+    <view class="stat" data-mode="posts" hover-class="pressed" bindtap="switchMode"><view class="stat-value">{{counts.posts}}</view><view class="stat-label">我的帖子</view></view>
+    <view class="stat" hover-class="pressed" bindtap="goFavorites"><view class="stat-value">{{counts.favorites}}</view><view class="stat-label">我的收藏</view></view>
+    <view class="stat" data-action="sold" hover-class="pressed" bindtap="openQuickAction"><view class="stat-value">{{counts.sold}}</view><view class="stat-label">已转出</view></view>
   </view>
 
-  <view class="quick-actions card">
-    <view class="quick-row" hover-class="pressed" hover-stay-time="100" bindtap="goMessages"><view class="quick-icon message-icon"><view class="chat-glyph"></view></view><view class="quick-copy"><view class="quick-title">我的消息</view><view class="quick-hint">继续和邻居沟通</view></view><view class="arrow">›</view></view>
-    <view class="quick-row" hover-class="pressed" hover-stay-time="100" bindtap="goPublish"><view class="quick-icon publish-icon"><view class="plus-glyph"></view></view><view class="quick-copy"><view class="quick-title">发布闲置</view><view class="quick-hint">让好物找到新主人</view></view><view class="arrow">›</view></view>
-    <view wx:if="{{hasDraft}}" class="quick-row draft-row" hover-class="pressed" hover-stay-time="100" bindtap="goDraft"><view class="quick-icon draft-icon">草</view><view class="quick-copy"><view class="quick-title">继续编辑草稿</view><view class="quick-hint">未提交的信息会自动保存在本机</view></view><view class="arrow">›</view></view>
-    <view class="quick-row" hover-class="pressed" hover-stay-time="100" bindtap="goHistory"><view class="quick-icon history-icon"><view class="history-glyph"></view></view><view class="quick-copy"><view class="quick-title">最近浏览</view><view class="quick-hint">继续查看看过的好物</view></view><view class="arrow">›</view></view>
-  </view>
-
-  <view wx:if="{{recent.length}}" class="recent-section">
-    <view class="recent-heading"><view class="section-title">最近浏览</view><view class="more-link" hover-class="pressed" bindtap="goHistory">全部记录 ›</view></view>
-    <scroll-view scroll-x class="recent-scroll" show-scrollbar="false"><view class="recent-row">
-      <view wx:for="{{recent}}" wx:key="id" class="recent-card card" data-id="{{item.id}}" hover-class="pressed" bindtap="openDetail"><image wx:if="{{item.images && item.images.length && !item.imageError}}" src="{{item.images[0]}}" mode="aspectFill" data-id="{{item.id}}" binderror="onRecentImageError" /><view wx:else class="recent-placeholder">邻</view><view class="recent-price">¥{{item.price}}</view><view class="recent-title">{{item.title}}</view></view>
-    </view></scroll-view>
-  </view>
-
-  <view class="listing-heading"><view class="section-title">{{mode === 'listings' ? '我的发布' : '我的收藏'}}</view><text class="listing-count">{{visibleListings.length}} 件</text></view>
-  <view class="mode-tabs {{mode === 'favorites' ? 'favorites-active' : ''}}">
-    <view class="mode-tab {{mode === 'listings' ? 'mode-active' : ''}}" data-mode="listings" hover-class="tab-pressed" bindtap="switchMode">我的发布</view>
-    <view class="mode-tab {{mode === 'favorites' ? 'mode-active' : ''}}" data-mode="favorites" hover-class="tab-pressed" bindtap="switchMode">我的收藏</view>
-  </view>
-
-  <scroll-view wx:if="{{mode === 'listings'}}" scroll-x class="status-scroll" show-scrollbar="false"><view class="status-row">
-    <view class="status-filter {{statusFilter === 'all' ? 'filter-active' : ''}}" data-status="all" hover-class="tab-pressed" bindtap="switchStatus">全部</view>
-    <view class="status-filter {{statusFilter === 'pending' ? 'filter-active' : ''}}" data-status="pending" hover-class="tab-pressed" bindtap="switchStatus">待审核</view>
-    <view class="status-filter {{statusFilter === 'published' ? 'filter-active' : ''}}" data-status="published" hover-class="tab-pressed" bindtap="switchStatus">已发布</view>
-    <view class="status-filter {{statusFilter === 'sold' ? 'filter-active' : ''}}" data-status="sold" hover-class="tab-pressed" bindtap="switchStatus">已售出</view>
-    <view class="status-filter {{statusFilter === 'rejected' ? 'filter-active' : ''}}" data-status="rejected" hover-class="tab-pressed" bindtap="switchStatus">未通过</view>
-    <view class="status-filter {{statusFilter === 'removed' ? 'filter-active' : ''}}" data-status="removed" hover-class="tab-pressed" bindtap="switchStatus">已下架</view>
-  </view></scroll-view>
-
-  <view wx:if="{{visibleListings.length}}" class="listing-list">
-    <view wx:for="{{visibleListings}}" wx:key="id" class="my-listing card" data-id="{{item.id}}" hover-class="listing-pressed" hover-stay-time="100" bindtap="openDetail" style="animation-delay: {{index * 45}}ms">
-      <image wx:if="{{item.images.length && !item.imageError}}" class="my-listing-image" src="{{item.images[0]}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onImageError" />
-      <view wx:else class="my-listing-image placeholder">邻</view>
-      <view class="my-listing-main"><view class="title">{{item.title}}</view><view class="muted listing-meta">{{item.community_name || '未标注小区'}} · ¥{{item.price}}</view><view wx:if="{{mode === 'listings'}}" class="status status-{{item.status}}">{{item.statusLabel}}</view><view wx:else class="status status-published">已收藏</view></view>
-      <button wx:if="{{mode === 'listings' && item.status === 'published'}}" class="sold-button" data-id="{{item.id}}" disabled="{{markingId == item.id}}" catchtap="markSold">{{markingId == item.id ? '更新中' : '标记售出'}}</button>
+  <view class="activity-card card">
+    <view class="section-title">我的动态</view>
+    <view class="activity-actions">
+      <view class="activity-action" data-action="pending" hover-class="pressed" bindtap="openQuickAction"><view class="action-icon pending-icon"><view class="hourglass"></view></view><view>待审核</view></view>
+      <view class="activity-action" data-action="comments" hover-class="pressed" bindtap="openQuickAction"><view class="action-icon comment-icon"><view class="comment-glyph"></view></view><view>我的评论</view></view>
+      <view class="activity-action" hover-class="pressed" bindtap="goHistory"><view class="action-icon history-icon"><view class="clock-glyph"></view></view><view>浏览历史</view></view>
+      <view class="activity-action" hover-class="pressed" bindtap="goFavorites"><view class="action-icon favorite-icon"><view class="star-glyph"></view></view><view>我的收藏</view></view>
     </view>
   </view>
 
-  <view wx:elif="{{loading}}" class="listing-list skeleton-me" aria-hidden="true"><view class="my-listing card"><view class="skeleton-block skeleton-thumb"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line status-line"></view></view></view><view class="my-listing card"><view class="skeleton-block skeleton-thumb"></view><view class="skeleton-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line status-line"></view></view></view></view>
+  <view class="menu-card card">
+    <view class="menu-row" hover-class="pressed" bindtap="editJoinedCommunity"><view class="menu-icon community-icon"><view class="pin-glyph"></view></view><view class="menu-label">加入的小区</view><view class="menu-value">{{communityBusy ? '处理中…' : communityName}}</view><view class="menu-arrow">›</view></view>
+    <view class="menu-row" hover-class="pressed" bindtap="goReports"><view class="menu-icon report-icon"><view class="flag-glyph"></view></view><view class="menu-label">我的举报</view><view class="menu-value">{{counts.reports}} 条</view><view class="menu-arrow">›</view></view>
+    <view class="menu-row" hover-class="pressed" bindtap="goSettings"><view class="menu-icon settings-icon"><view class="gear-glyph"></view></view><view class="menu-label">设置</view><view class="menu-arrow">›</view></view>
+  </view>
+
+  <view class="content-tabs {{mode === 'posts' ? 'posts-active' : ''}}">
+    <view class="content-tab {{mode === 'listings' ? 'tab-active' : ''}}" data-mode="listings" hover-class="tab-pressed" bindtap="switchMode">我的闲置</view>
+    <view class="content-tab {{mode === 'posts' ? 'tab-active' : ''}}" data-mode="posts" hover-class="tab-pressed" bindtap="switchMode">我的帖子</view>
+  </view>
+  <view wx:if="{{mode === 'posts'}}" class="post-create-strip" hover-class="pressed" bindtap="goCreatePost"><view>分享一条邻里动态</view><view class="compose-plus">+</view></view>
+
+  <scroll-view wx:if="{{mode === 'listings'}}" scroll-x class="filter-scroll" show-scrollbar="false"><view class="filter-row">
+    <view class="status-filter {{statusFilter === 'all' ? 'filter-active' : ''}}" data-status="all" hover-class="tab-pressed" bindtap="switchStatus">全部</view>
+    <view class="status-filter {{statusFilter === 'pending' ? 'filter-active' : ''}}" data-status="pending" bindtap="switchStatus">待审核</view>
+    <view class="status-filter {{statusFilter === 'published' ? 'filter-active' : ''}}" data-status="published" bindtap="switchStatus">已发布</view>
+    <view class="status-filter {{statusFilter === 'sold' ? 'filter-active' : ''}}" data-status="sold" bindtap="switchStatus">已转出</view>
+    <view class="status-filter {{statusFilter === 'rejected' ? 'filter-active' : ''}}" data-status="rejected" bindtap="switchStatus">未通过</view>
+    <view class="status-filter {{statusFilter === 'hidden' ? 'filter-active' : ''}}" data-status="hidden" bindtap="switchStatus">已下架</view>
+  </view></scroll-view>
+
+  <view wx:if="{{visibleListings.length && mode === 'posts'}}" class="post-masonry">
+    <view wx:for="{{postColumns}}" wx:for-item="column" wx:for-index="columnIndex" wx:key="index" class="post-column">
+      <view wx:for="{{column}}" wx:for-item="item" wx:for-index="postIndex" wx:key="id" class="my-post-card card" data-id="{{item.id}}" hover-class="listing-pressed" bindtap="openItem" style="animation-delay: {{postIndex * 40}}ms">
+        <image wx:if="{{item.cover && !item.imageError}}" class="my-post-image" src="{{item.cover}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onImageError" />
+        <view class="my-post-copy">
+          <view class="my-post-type">{{item.typeLabel}}</view>
+          <view class="my-post-title">{{item.title}}</view>
+          <view wx:if="{{item.content}}" class="my-post-excerpt">{{item.content}}</view>
+          <view class="my-post-community">{{item.community_name || '睦淘社区'}}</view>
+          <view wx:if="{{item.status !== 'published'}}" class="status status-{{item.status === 'hidden' ? 'removed' : item.status}}">{{item.statusLabel}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{visibleListings.length}}" class="listing-grid">
+    <view wx:for="{{visibleListings}}" wx:key="id" class="listing-card card" data-id="{{item.id}}" hover-class="listing-pressed" bindtap="openItem" style="animation-delay: {{index * 40}}ms">
+      <image wx:if="{{item.cover && !item.imageError}}" class="listing-image" src="{{item.cover}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onImageError" /><view wx:else class="listing-image image-placeholder"><view class="placeholder-mark">邻</view></view>
+      <view class="listing-copy">
+        <view wx:if="{{mode !== 'posts'}}" class="listing-price">¥{{item.price}}</view><view wx:else class="post-type">{{item.typeLabel}}</view>
+        <view class="listing-title">{{item.title}}</view><view wx:if="{{mode === 'posts'}}" class="post-excerpt">{{item.content}}</view><view class="listing-meta">{{item.community_name || '睦淘社区'}}</view>
+        <view wx:if="{{item.status !== 'published' && item.status !== 'sold'}}" class="status status-{{item.status === 'hidden' ? 'removed' : item.status}}">{{item.statusLabel}}</view>
+        <button wx:if="{{mode === 'listings' && item.status === 'published'}}" class="sold-button" data-id="{{item.id}}" disabled="{{markingId == item.id}}" catchtap="markSold">{{markingId == item.id ? '更新中' : '标记转出'}}</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{loading}}" class="listing-grid skeleton-grid" aria-hidden="true"><view class="listing-card card"><view class="skeleton-block listing-image"></view><view class="listing-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view></view><view class="listing-card card"><view class="skeleton-block listing-image"></view><view class="listing-copy"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view></view></view>
   <view wx:elif="{{error}}" class="state-panel card"><view class="state-title">暂时无法加载</view><view class="state-copy">检查网络连接后再试</view><button class="primary state-action" hover-class="pressed" bindtap="retry">重新加载</button></view>
-  <view wx:else class="state-panel card"><view class="state-icon">{{mode === 'listings' ? '发' : '藏'}}</view><view class="state-title">{{mode === 'listings' ? (statusFilter === 'all' ? '还没有发布闲置' : '这个状态下还没有信息') : '还没有收藏好物'}}</view><view class="state-copy">{{mode === 'listings' ? (statusFilter === 'all' ? '发布闲置，让邻居先看到' : '切换状态查看其他发布信息') : '逛一逛，收藏喜欢的好物'}}</view><button wx:if="{{mode === 'listings' && statusFilter === 'all'}}" class="primary state-action" hover-class="pressed" bindtap="goPublish">发布闲置</button><button wx:elif="{{mode === 'favorites'}}" class="secondary state-action" hover-class="pressed" bindtap="goBrowse">去逛逛</button></view>
+  <view wx:else class="state-panel card"><view class="state-mark">{{mode === 'posts' ? '帖' : '闲'}}</view><view class="state-title">{{mode === 'listings' ? (statusFilter === 'all' ? '还没有发布闲置' : '这个状态下还没有信息') : '还没有发布社区帖子'}}</view><view class="state-copy">{{mode === 'listings' ? '发布好物，让附近邻居看见' : '分享邻里话题，和小区邻居聊一聊'}}</view><button wx:if="{{mode === 'listings' && statusFilter === 'all'}}" class="primary state-action" hover-class="pressed" bindtap="goPublish">发布闲置</button><button wx:elif="{{mode === 'posts'}}" class="primary state-action" hover-class="pressed" bindtap="goCreatePost">发布社区帖子</button></view>
+  </block>
 </view>

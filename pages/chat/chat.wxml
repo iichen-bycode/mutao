@@ -1,23 +1,68 @@
-<view class="chat-page page-enter">
+<view class="chat-page" style="padding-top: {{statusBarHeight}}px">
+  <view class="chat-header">
+    <view class="back-button" hover-class="pressed" bindtap="back" aria-label="返回"><view class="back-chevron"></view></view>
+    <image wx:if="{{conversation.otherAvatar}}" class="header-avatar" src="{{conversation.otherAvatar}}" mode="aspectFill" />
+    <view wx:else class="header-avatar avatar-fallback">{{conversation.otherInitial || '邻'}}</view>
+    <view class="header-person">
+      <view class="person-name">{{conversation.otherNickname || '邻里聊天'}}</view>
+      <view class="person-status"><view class="online-dot {{otherOnline ? 'is-online' : ''}}"></view>{{otherOnline ? '在线' : connectionState === 'connected' ? '暂时离线' : connectionState === 'connecting' ? '连接中' : '离线'}}</view>
+    </view>
+    <view wx:if="{{conversation.otherPhone}}" class="call-button" hover-class="pressed" bindtap="callOther" aria-label="拨打电话"><text class="call-glyph">☎</text></view>
+  </view>
+
   <view class="connection-bar">
     <view class="connection-indicator {{connectionState === 'connected' ? 'online' : 'offline'}}"></view>
-    <text class="connection-label">{{connectionState === 'connected' ? '已连接，可发送消息' : connectionState === 'connecting' ? '正在连接消息服务…' : '消息连接已断开'}}</text>
+    <text class="connection-label">{{connectionState === 'connected' ? '消息实时同步中' : connectionState === 'connecting' ? '正在连接消息服务…' : '连接已断开'}}</text>
     <text wx:if="{{connectionState === 'disconnected'}}" class="retry-link" hover-class="pressed" bindtap="retry">重新连接</text>
   </view>
-  <view class="chat-caption card"><view class="caption-label">正在聊</view><view class="caption-title">{{title}}</view><view class="muted">请友好沟通，线下交易注意安全</view></view>
 
-  <view wx:if="{{loadingHistory}}" class="chat-skeleton" aria-hidden="true"><view class="skeleton-block skeleton-bubble theirs-skeleton"></view><view class="skeleton-block skeleton-bubble mine-skeleton"></view><view class="skeleton-block skeleton-bubble theirs-skeleton short-bubble"></view></view>
-  <view wx:elif="{{historyError && !messages.length}}" class="state-panel"><view class="state-title">聊天记录暂时无法加载</view><view class="state-copy">检查网络后重新连接</view><button class="primary state-action" hover-class="pressed" bindtap="retry">重试</button></view>
-  <view wx:elif="{{!messages.length}}" class="state-panel first-message"><view class="state-icon">聊</view><view class="state-title">打个招呼，开始聊聊</view><view class="state-copy">关于物品的问题，可以直接问卖家</view></view>
-
-  <view wx:else class="messages-list">
-    <view wx:for="{{messages}}" wx:key="id" class="message-row {{item.isMine ? 'sent' : ''}}">
-      <view class="bubble-column"><view class="bubble {{item.isMine ? 'mine' : 'theirs'}}">{{item.body}}</view><view class="message-time">{{item.timeLabel}}</view></view>
+  <view wx:if="{{conversation && conversation.listingId}}" class="product-card" hover-class="product-pressed" bindtap="openListing">
+    <view wx:if="{{conversation.listingImage}}" class="product-image-wrap"><image class="product-image" src="{{conversation.listingImage}}" mode="aspectFill" /></view>
+    <view wx:else class="product-image-wrap product-placeholder"><text>物</text></view>
+    <view class="product-info">
+      <view class="product-label">正在聊这件物品</view>
+      <view class="product-title">{{conversation.listingTitle}}</view>
+      <view class="product-bottom"><text class="product-price">¥{{conversation.priceLabel}}</text><text class="product-link">查看详情 ›</text></view>
     </view>
   </view>
+  <view wx:elif="{{conversation}}" class="direct-chat-note">邻里私信 · 友善沟通，线下交易注意安全</view>
+
+  <view wx:if="{{historyError && !messages.length}}" class="history-error">
+    <view class="state-title">聊天记录暂时无法加载</view>
+    <view class="state-copy">检查网络后重新连接</view>
+    <button class="retry-button" hover-class="pressed" bindtap="retry">重新加载</button>
+  </view>
+
+  <scroll-view wx:else class="messages-scroll" scroll-y="true" scroll-with-animation="true" scroll-into-view="{{scrollTarget}}" show-scrollbar="false">
+    <view wx:if="{{loadingHistory}}" class="chat-skeleton" aria-hidden="true">
+      <view class="skeleton-block skeleton-bubble"></view>
+      <view class="skeleton-block skeleton-bubble mine-skeleton"></view>
+      <view class="skeleton-block skeleton-bubble short-bubble"></view>
+    </view>
+    <view wx:elif="{{!messages.length}}" class="first-message">
+      <view class="empty-mark"><view class="empty-chat-glyph"></view></view>
+      <view class="state-title">打个招呼，开始聊聊</view>
+      <view class="state-copy">关于物品的问题，可以直接问{{conversation.otherNickname || '邻居'}}</view>
+    </view>
+    <view wx:else class="messages-list">
+      <block wx:for="{{messages}}" wx:key="id">
+        <view wx:if="{{item.dateLabel}}" class="date-divider"><text>{{item.dateLabel}}</text></view>
+        <view id="message-{{item.id}}" class="message-row {{item.isMine ? 'sent' : ''}}">
+          <image wx:if="{{!item.isMine && conversation.otherAvatar}}" class="message-avatar" src="{{conversation.otherAvatar}}" mode="aspectFill" />
+          <view wx:elif="{{!item.isMine}}" class="message-avatar avatar-fallback">{{conversation.otherInitial || '邻'}}</view>
+          <view class="bubble-column">
+            <view class="bubble {{item.isMine ? 'mine' : 'theirs'}}">{{item.body}}</view>
+            <view class="message-time">{{item.timeLabel}}</view>
+          </view>
+        </view>
+      </block>
+    </view>
+    <view class="scroll-spacer"></view>
+  </scroll-view>
 
   <view class="composer">
-    <input placeholder="说点什么…" value="{{draft}}" confirm-type="send" maxlength="2000" bindinput="input" bindconfirm="send" />
-    <button class="primary send-button" hover-class="pressed" disabled="{{!canSend || sending || connectionState !== 'connected'}}" loading="{{sending}}" bindtap="send">{{sending ? '发送中' : '发送'}}</button>
+    <view class="quick-reply" hover-class="pressed" bindtap="quickReply" aria-label="常用语"><view class="face-icon"><view class="face-eyes"></view><view class="face-smile"></view></view></view>
+    <input class="message-input" placeholder="输入消息…" value="{{draft}}" confirm-type="send" maxlength="2000" adjust-position="true" cursor-spacing="16" bindinput="input" bindconfirm="send" />
+    <button class="send-button {{canSend && !sending && connectionState === 'connected' ? 'send-ready' : ''}}" hover-class="pressed" disabled="{{!canSend || sending || connectionState !== 'connected'}}" loading="{{sending}}" bindtap="send" aria-label="发送消息"><view class="send-arrow"></view></button>
   </view>
 </view>

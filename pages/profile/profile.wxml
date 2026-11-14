@@ -1,0 +1,65 @@
+<view class="profile-page page-enter">
+  <view wx:if="{{profile}}" class="profile-header">
+    <view class="identity-row">
+      <image wx:if="{{profile.avatarUrl && !avatarError}}" class="avatar" src="{{profile.avatarUrl}}" mode="aspectFill" binderror="onAvatarError" />
+      <view wx:else class="avatar avatar-fallback">{{profile.initial}}</view>
+      <view class="identity-copy">
+        <view class="nickname">{{profile.nickname || '邻居'}}</view>
+        <view class="profile-location">ID: {{profile.publicId}}<text class="meta-separator">·</text>{{profile.communityName || '睦淘邻居'}}</view>
+        <view class="member-badge"><text class="badge-star">★</text> 邻里成员</view>
+      </view>
+    </view>
+    <view wx:if="{{!isSelf}}" class="profile-actions">
+      <button class="message-button" hover-class="button-pressed" loading="{{messaging}}" bindtap="messageUser">私信联系</button>
+      <button class="report-button" hover-class="button-pressed" loading="{{reporting}}" bindtap="reportUser">举报用户</button>
+    </view>
+  </view>
+
+  <view wx:if="{{profile}}" class="stats-row">
+    <view class="stat-card"><view class="stat-value">{{stats.listingCount}}</view><view class="stat-label">闲置物品</view></view>
+    <view class="stat-card"><view class="stat-value">{{stats.postCount}}</view><view class="stat-label">社区帖子</view></view>
+    <view class="stat-card"><view class="stat-value">{{stats.successfulTransfers}}</view><view class="stat-label">成功转出</view></view>
+  </view>
+
+  <view wx:if="{{profile}}" class="content-tabs">
+    <view class="content-tab {{mode === 'listings' ? 'active-tab' : ''}}" data-mode="listings" hover-class="tab-pressed" bindtap="switchMode">闲置物品</view>
+    <view class="content-tab {{mode === 'posts' ? 'active-tab' : ''}}" data-mode="posts" hover-class="tab-pressed" bindtap="switchMode">社区帖子</view>
+  </view>
+
+  <view wx:if="{{profileUnavailable}}" class="state-panel card"><view class="state-title">该主页暂不可查看</view><view class="state-copy">对方已关闭主页查看权限，暂时无法查看</view></view>
+  <view wx:elif="{{contentError}}" class="state-panel card"><view class="state-title">暂时无法加载主页内容</view><view class="state-copy">检查网络后再试一次</view><button class="primary state-action" hover-class="pressed" bindtap="retry">重新加载</button></view>
+  <view wx:elif="{{contentLoading}}" class="loading-grid" aria-hidden="true"><view class="skeleton-card card"><view class="skeleton-block skeleton-image"></view><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view><view class="skeleton-card card"><view class="skeleton-block skeleton-image"></view><view class="skeleton-line"></view><view class="skeleton-line short-line"></view></view></view>
+
+  <view wx:elif="{{mode === 'listings' && listings.length}}" class="listing-grid">
+    <view wx:for="{{listings}}" wx:key="id" class="listing-card card" data-id="{{item.id}}" hover-class="card-pressed" bindtap="openListing">
+      <view class="listing-photo-wrap">
+        <image wx:if="{{item.images.length && !item.imageError}}" class="listing-photo" src="{{item.images[0]}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onListingImageError" />
+        <view wx:else class="listing-placeholder"><view class="placeholder-mark">邻</view></view>
+        <view wx:if="{{item.status === 'sold'}}" class="sold-tag">已售出</view>
+      </view>
+      <view class="listing-price">¥{{item.price}}</view>
+      <view class="listing-title">{{item.title}}</view>
+      <view class="listing-meta">{{item.communityLabel}}<text wx:if="{{item.timeLabel}}"> · {{item.timeLabel}}</text></view>
+    </view>
+  </view>
+
+  <view wx:elif="{{mode === 'posts' && posts.length}}" class="post-list">
+    <view wx:for="{{posts}}" wx:key="id" class="post-card card">
+      <view class="post-heading"><text class="post-type">{{item.typeLabel}}</text><text class="post-time">{{item.timeLabel}}</text></view>
+      <view class="post-title">{{item.title}}</view>
+      <view class="post-content">{{item.content}}</view>
+      <image wx:if="{{item.images.length && !item.imageError}}" class="post-image" src="{{item.images[0]}}" mode="aspectFill" lazy-load="true" data-id="{{item.id}}" binderror="onPostImageError" />
+      <view class="post-community">{{item.communityLabel}}</view>
+    </view>
+  </view>
+
+  <view wx:elif="{{!contentLoading && !contentError}}" class="empty-state card">
+    <view class="empty-mark">{{mode === 'listings' ? '物' : '帖'}}</view>
+    <view class="empty-title">{{mode === 'listings' ? '还没有公开的闲置物品' : '还没有公开的社区帖子'}}</view>
+    <view class="empty-copy">{{mode === 'listings' ? '对方发布并通过审核的物品会展示在这里' : '对方发布并通过审核的社区帖子会展示在这里'}}</view>
+  </view>
+
+  <view wx:if="{{loadingMore}}" class="load-more">正在加载更多…</view>
+  <view wx:elif="{{hasMore}}" class="load-more">上滑加载更多</view>
+  <view wx:elif="{{total > 0 && !hasMore && !contentLoading}}" class="load-more">已经到底啦</view>
+</view>

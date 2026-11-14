@@ -1,0 +1,51 @@
+<view class="post-detail">
+  <scroll-view class="post-scroll" scroll-y refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" refresher-background="#FFF7F1" bindrefresherrefresh="onRefresherRefresh">
+    <view class="post-scroll-content">
+      <view wx:if="{{loading}}" class="post-loading"><view class="skeleton-block post-skeleton-cover"></view><view class="post-skeleton-card card"><view class="skeleton-line"></view><view class="skeleton-line short-line"></view><view class="skeleton-line"></view></view></view>
+      <view wx:elif="{{error}}" class="state-panel card"><view class="state-title">帖子暂时无法打开</view><view class="state-copy">它可能已下架，或网络暂时不可用</view><button class="primary state-action" hover-class="pressed" bindtap="retry">重新加载</button></view>
+      <block wx:else>
+    <view wx:if="{{gallerySlides.length}}" class="gallery-shell">
+      <swiper class="gallery" current="{{galleryIndex}}" indicator-dots="{{gallerySlides.length > 1}}" indicator-active-color="#FF8FA3" circular="{{gallerySlides.length > 1}}" bindchange="onGalleryChange">
+        <swiper-item wx:for="{{gallerySlides}}" wx:key="url" data-current="{{item.url}}" bindtap="previewImage"><image wx:if="{{!item.failed}}" class="gallery-image" src="{{item.url}}" mode="aspectFill" lazy-load="true" data-index="{{item.index}}" binderror="onImageError" /><view wx:else class="image-fallback"><view class="placeholder-icon">邻</view><view>这张图片暂时无法显示</view></view></swiper-item>
+      </swiper>
+      <view wx:if="{{gallerySlides.length > 1}}" class="gallery-count">{{galleryIndex + 1}} / {{gallerySlides.length}}</view>
+    </view>
+
+    <view class="post-card card">
+      <view class="post-meta"><text class="post-kind">{{item.post_type_label || '社区帖子'}}</text><text class="community-label">{{item.community_name || '睦淘社区'}}</text><text wx:if="{{item.timeLabel}}" class="time-label">{{item.timeLabel}}</text></view>
+      <view class="post-title">{{item.title}}</view>
+      <view class="activity-meta"><text class="meta-pin"></text>{{item.view_count || 0}}次浏览 <text class="meta-dot">·</text><text class="meta-heart">♥</text>{{item.like_count || 0}}赞 <text class="meta-dot">·</text>{{item.comment_count || 0}}条评论</view>
+      <view wx:if="{{item.status !== 'published'}}" class="moderation-note">{{item.status === 'pending' ? '帖子正在审核，审核通过后邻居即可查看和评论。' : item.moderation_note || '这条帖子暂不可见。'}}</view>
+      <view class="distance-row">距离所选小区 <text>{{item.distanceLabel}}</text></view>
+    </view>
+
+    <view class="description-card card"><view class="section-title">详细内容</view><view class="post-content">{{item.content || '作者暂未补充内容'}}</view></view>
+
+    <view class="author-card card" hover-class="pressed" bindtap="openAuthor">
+      <image wx:if="{{item.author_avatar}}" class="author-avatar author-avatar-image" src="{{item.author_avatar}}" mode="aspectFill" />
+      <view wx:else class="author-avatar">{{item.authorInitial}}</view>
+      <view class="author-info"><view class="author-name">{{item.isOwner ? '这是你发布的帖子' : (item.author_nickname || '邻居')}}</view><view class="author-meta">{{item.community_name || '睦淘社区'}} · 帖子发布者</view></view>
+      <button wx:if="{{!item.isOwner}}" class="message-author" hover-class="pressed" catchtap="messageAuthor">私聊</button>
+    </view>
+
+    <view wx:if="{{item.contact_type !== 'none' && item.contact_value && !item.isOwner}}" class="contact-card card" hover-class="pressed" bindtap="callAuthor"><view class="contact-head"><view class="section-title">公开联系方式</view><view class="contact-action">{{item.contact_type === 'phone' || item.contact_type === 'both' ? '拨打' : '复制'}}</view></view><view class="contact-value">{{item.contact_value}}</view><view class="contact-help">点击{{item.contact_type === 'phone' || item.contact_type === 'both' ? '拨打电话' : '复制微信号'}}</view></view>
+
+    <view class="comments-section card">
+      <view class="comments-heading"><view class="section-title">邻里评论</view><view class="comments-count">{{item.comment_count || 0}} 条</view></view>
+      <view wx:if="{{comments.length}}" class="comment-list"><view wx:for="{{comments}}" wx:key="id" class="comment-row"><view class="comment-avatar">{{item.initial}}</view><view class="comment-main"><view class="comment-head"><view class="comment-name">{{item.nickname || '邻居'}}</view><view class="comment-time">{{item.timeLabel}}</view></view><view class="comment-content">{{item.content}}</view></view></view></view>
+      <view wx:elif="{{commentsLoading}}" class="comment-empty">正在加载评论…</view>
+      <view wx:elif="{{commentError}}" class="comment-empty" hover-class="pressed" bindtap="loadComments">评论暂时无法加载，点此重试</view>
+      <view wx:else class="comment-empty">还没有评论，来聊聊你的想法</view>
+    </view>
+
+      </block>
+    </view>
+  </scroll-view>
+
+  <view class="comment-composer" wx:if="{{item && item.status === 'published'}}">
+    <button class="like-button {{item.liked ? 'liked' : ''}}" loading="{{likeBusy}}" hover-class="pressed" bindtap="toggleLike"><text>{{item.liked ? '♥' : '♡'}}</text>{{item.like_count || 0}}</button>
+    <textarea class="comment-input" value="{{commentText}}" placeholder="友善交流，和邻居打个招呼…" placeholder-style="text-align:center;line-height:36rpx;" maxlength="1000" auto-height bindinput="onCommentInput" />
+    <button class="primary comment-submit" disabled="{{commentBusy}}" hover-class="pressed" bindtap="submitComment"><text>{{commentBusy ? '发布中' : '发送'}}</text></button>
+  </view>
+  <view wx:elif="{{item}}" class="comment-closed">审核通过后开放互动</view>
+</view>

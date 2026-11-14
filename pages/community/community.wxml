@@ -2,7 +2,7 @@
   <view class="intro">
     <view class="eyebrow">浏览范围</view>
     <view class="title">看看身边的好物</view>
-    <view class="intro-copy">选择小区后，首页会优先展示这里的闲置。位置只在你主动点选时使用。</view>
+    <view class="intro-copy">这里只筛选首页闲置，不代表加入小区。想加入小区，请在设置中选择。</view>
   </view>
 
   <view wx:if="{{selection && selection.mode === 'selected' && selection.location}}" class="selected card">

@@ -1,0 +1,32 @@
+<view class="page post-create page-enter">
+  <view class="page-title">分享邻里动态</view>
+  <view class="page-intro">选择一个分类，和同小区邻居分享动态或需求。</view>
+  <view class="form-card card">
+    <view class="field-label">帖子类型</view>
+    <view wx:if="{{categoryLoading}}" class="type-placeholder">正在加载分类…</view>
+    <view wx:elif="{{categoryError}}" class="type-placeholder type-retry" bindtap="loadPostCategories">分类加载失败，点此重试</view>
+    <view wx:elif="{{postCategories.length}}" class="type-row"><view wx:for="{{postCategories}}" wx:key="code" class="type-option {{postType === item.code ? 'type-active' : ''}}" data-code="{{item.code}}" hover-class="pressed" bindtap="selectType">{{item.name}}</view></view>
+    <view wx:else class="type-placeholder">暂无可用帖子分类</view>
+    <view class="field-label">选择小区</view>
+    <view class="community-select {{selection && selection.mode === 'selected' ? 'community-selected' : ''}}" hover-class="pressed" bindtap="chooseCommunity"><view class="pin-glyph"></view><view class="community-copy">{{selectingCommunity ? '正在打开地图…' : selection && selection.mode === 'selected' && selection.location ? (selection.location.name || selection.location.address) : '选择发布小区'}}</view><view class="community-action">{{selection && selection.mode === 'selected' ? '更换 ›' : '地图选择 ›'}}</view></view>
+    <view class="field-label">标题</view>
+    <input class="title-input" value="{{title}}" maxlength="120" placeholder="用一句话说说你想分享什么" data-field="title" bindinput="input" />
+    <view class="field-label content-label">内容</view>
+    <textarea class="content-input" value="{{content}}" maxlength="3000" placeholder="补充一些细节，让邻居更容易了解…" data-field="content" auto-height bindinput="input" />
+    <view class="input-hint">{{content.length}} / 3000</view>
+    <view class="photo-field">
+      <view class="photo-head"><view class="field-label">图片 <text class="optional-label">选填</text></view><view class="photo-count">{{photos.length}} / 9</view></view>
+      <view class="photo-grid">
+        <view wx:for="{{photos}}" wx:key="key" class="photo-wrap" data-index="{{index}}" bindtap="previewPhoto">
+          <image src="{{item.localPath}}" mode="aspectFill" />
+          <view class="photo-remove {{uploading || submitting ? 'photo-remove-disabled' : ''}}" data-index="{{index}}" catchtap="removeImage" aria-label="删除图片">×</view>
+        </view>
+        <view wx:if="{{photos.length < 9}}" class="add-photo {{uploading ? 'add-photo-disabled' : ''}}" hover-class="pressed" bindtap="pickImages"><view class="add-symbol">＋</view><view>{{uploading ? '上传中…' : '添加图片'}}</view></view>
+      </view>
+      <view wx:if="{{uploading}}" class="uploading-note"><view class="mini-spinner"></view>{{uploadProgress}}</view>
+      <view class="photo-hint">最多添加 9 张图片</view>
+    </view>
+  </view>
+  <view class="moderation-hint">发布后会先经过审核；请勿填写个人敏感信息。</view>
+  <button class="primary submit-button" disabled="{{submitting || uploading}}" hover-class="pressed" bindtap="submit">{{submitting ? '提交中…' : uploading ? '图片上传中…' : '提交审核'}}</button>
+</view>

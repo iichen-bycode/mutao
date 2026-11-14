@@ -1,6 +1,18 @@
-<view class="tab-shell"><view class="tabbar">
-  <view wx:for="{{list}}" wx:key="pagePath" class="tab-item {{selected === index ? 'tab-selected' : ''}} {{item.icon === 'publish' ? 'tab-publish' : ''}}" data-index="{{index}}" bindtap="switchTab">
-    <view class="tab-icon tab-{{item.icon}}"><view wx:if="{{item.icon === 'publish'}}" class="tab-plus"></view><view wx:elif="{{item.icon === 'home'}}" class="home-roof"></view><view wx:if="{{item.icon === 'community'}}" class="community-dot community-dot-one"></view><view wx:if="{{item.icon === 'community'}}" class="community-dot community-dot-two"></view><view wx:elif="{{item.icon === 'message'}}" class="message-tail"></view><view wx:elif="{{item.icon === 'me'}}" class="me-head"></view></view>
-    <view class="tab-label">{{item.text}}</view>
+<view class="tab-shell">
+  <view wx:if="{{selected === 1}}" class="community-compose-fab" hover-class="community-compose-pressed" bindtap="createCommunityPost" aria-label="发布社区帖子"><view class="community-compose-plus"></view></view>
+  <view class="tabbar">
+  <view wx:for="{{list}}" wx:key="pagePath" class="tab-item {{selected === index ? 'tab-selected' : ''}} {{item.icon === 'publish' ? 'tab-publish' : ''}}" data-index="{{index}}" bindtap="switchTab" aria-label="{{item.text}}">
+    <view class="tab-icon tab-{{item.icon}}">
+      <view wx:if="{{item.icon === 'publish'}}" class="tab-plus"></view>
+      <block wx:elif="{{item.icon === 'home'}}"><view class="home-roof"></view><view class="home-door"></view></block>
+      <block wx:elif="{{item.icon === 'community'}}">
+        <view class="community-person person-left"><view class="person-head"></view><view class="person-body"></view></view>
+        <view class="community-person person-right"><view class="person-head"></view><view class="person-body"></view></view>
+        <view class="community-person person-center"><view class="person-head"></view><view class="person-body"></view></view>
+      </block>
+      <block wx:elif="{{item.icon === 'message'}}"><view class="message-tail"></view><view class="message-dot message-dot-one"></view><view class="message-dot message-dot-two"></view><view class="message-dot message-dot-three"></view></block>
+      <view wx:elif="{{item.icon === 'me'}}" class="me-head"></view>
+    </view>
+    <view wx:if="{{item.icon !== 'publish'}}" class="tab-label">{{item.text}}</view><view wx:else class="tab-publish-label-spacer"></view>
   </view>
 </view></view>
